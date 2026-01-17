@@ -18,8 +18,8 @@
 3. 如开启删除原图，清理完成后会删除输入目录里的原图。
 
 ## 参考的开源项目
-- **gemini-watermark-remover** — 去水印算法思路（反向 Alpha 混合）。
-- **GemSaver** — Gemini 图片下载流程参考。
+- [**gemini-watermark-remover**](https://github.com/journey-ad/gemini-watermark-remover) — 去水印算法思路（反向 Alpha 混合）。
+- [**GemSaver**](https://github.com/brucevanfdm/GemSaver) — Gemini 图片下载流程参考。
 
 ## 依赖库
 - **FastAPI** — 本地清理服务 API。
