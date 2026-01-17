@@ -71,6 +71,7 @@
   "label_delete_originals": {"message": "清理后删除原图"},
   "label_auto_clean": {"message": "下载完成后自动清理"},
   "label_language": {"message": "界面语言"},
+  "btn_upload_test": {"message": "测试上传"},
   "btn_save": {"message": "保存设置"},
   "btn_test": {"message": "测试连接"},
   "status_saved": {"message": "已保存"},
@@ -78,6 +79,16 @@
   "status_test_ok": {"message": "连接正常"},
   "status_test_fail": {
     "message": "连接失败：$ERROR$",
+    "placeholders": { "ERROR": { "content": "$1" } }
+  },
+  "status_upload_test_missing": {"message": "请填写 ImgBed 上传 API 地址。"},
+  "status_upload_test_running": {"message": "正在上传测试图..."},
+  "status_upload_test_ok": {
+    "message": "上传成功：$URL$",
+    "placeholders": { "URL": { "content": "$1" } }
+  },
+  "status_upload_test_fail": {
+    "message": "上传失败：$ERROR$",
     "placeholders": { "ERROR": { "content": "$1" } }
   },
   "hint_docker_mount": {"message": "挂载提示：服务只能访问容器内挂载目录（默认 /data）。输入/输出目录必须是该目录下的子目录。"},

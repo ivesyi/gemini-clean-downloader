@@ -40,6 +40,13 @@ label {
   font-size: 14px;
 }
 
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 input[type="text"] {
   height: 40px;
   border-radius: 10px;
@@ -85,6 +92,15 @@ button {
 button.secondary {
   background: #e8f0fe;
   color: #1a73e8;
+}
+
+button.tertiary {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: #e8f0fe;
+  color: #1a73e8;
+  font-size: 12px;
 }
 
 .status {
@@ -145,6 +161,11 @@ button.secondary {
   }
 
   button.secondary {
+    background: #394457;
+    color: #8ab4f8;
+  }
+
+  button.tertiary {
     background: #394457;
     color: #8ab4f8;
   }

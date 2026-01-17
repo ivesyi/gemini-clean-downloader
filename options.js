@@ -62,6 +62,31 @@ const testConnection = async () => {
   }
 };
 
+const testUpload = async () => {
+  const serviceUrl = byId('serviceUrl').value.trim() || DEFAULTS.serviceUrl;
+  const uploadUrl = byId('uploadApiUrl').value.trim();
+  if (!uploadUrl) {
+    setStatus(t('status_upload_test_missing'), 'error');
+    return;
+  }
+  setStatus(t('status_upload_test_running'), 'info');
+  try {
+    const response = await fetch(`${serviceUrl}/upload-test`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ upload_url: uploadUrl })
+    });
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      throw new Error(text || `HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    setStatus(t('status_upload_test_ok', { url: data.url || '' }), 'success');
+  } catch (error) {
+    setStatus(t('status_upload_test_fail', { error }), 'error');
+  }
+};
+
 const setStatus = (text, type) => {
   const el = byId('status');
   el.textContent = text;
@@ -83,6 +108,7 @@ const updateUploadState = () => {
 byId('saveBtn').addEventListener('click', saveSettings);
 byId('testBtn').addEventListener('click', testConnection);
 byId('uploadEnabled').addEventListener('change', updateUploadState);
+byId('uploadTestBtn').addEventListener('click', testUpload);
 
 const init = async () => {
   if (window.GCDI18n?.init) {

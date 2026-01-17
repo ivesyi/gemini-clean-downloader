@@ -71,6 +71,7 @@
   "label_delete_originals": {"message": "Delete originals after cleaning"},
   "label_auto_clean": {"message": "Auto clean after downloads finish"},
   "label_language": {"message": "UI language"},
+  "btn_upload_test": {"message": "Test Upload"},
   "btn_save": {"message": "Save Settings"},
   "btn_test": {"message": "Test Connection"},
   "status_saved": {"message": "Saved."},
@@ -78,6 +79,16 @@
   "status_test_ok": {"message": "OK"},
   "status_test_fail": {
     "message": "Failed: $ERROR$",
+    "placeholders": { "ERROR": { "content": "$1" } }
+  },
+  "status_upload_test_missing": {"message": "Please enter ImgBed upload API URL."},
+  "status_upload_test_running": {"message": "Uploading test image..."},
+  "status_upload_test_ok": {
+    "message": "Upload ok: $URL$",
+    "placeholders": { "URL": { "content": "$1" } }
+  },
+  "status_upload_test_fail": {
+    "message": "Upload failed: $ERROR$",
     "placeholders": { "ERROR": { "content": "$1" } }
   },
   "hint_docker_mount": {"message": "Docker mount reminder: The service only sees the directory mounted into the container (default /data). Your input/output folders must be subdirectories inside that mount."},
