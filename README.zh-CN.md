@@ -53,7 +53,7 @@
 - **清理后删除原图**
 - **下载完成后自动清理**
 - **启用 ImgBed 上传**
-- **上传 API 地址（CloudFlare ImgBed）**
+- **上传 API 地址（CloudFlare ImgBed）**，例如 `https://cfbed.sanyue.de/upload?authCode=xxxx`
 - **上传后删除清理文件**
 - **界面语言**
 

@@ -53,7 +53,7 @@ Available in the extension settings:
 - **Delete originals after cleaning**
 - **Auto clean after downloads finish**
 - **Enable ImgBed upload**
-- **Upload API URL (CloudFlare ImgBed)**
+- **Upload API URL (CloudFlare ImgBed)**, e.g. `https://cfbed.sanyue.de/upload?authCode=xxxx`
 - **Delete cleaned files after upload**
 - **UI language**
 
