@@ -3,6 +3,7 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from requests.exceptions import ReadTimeout
 
 CURRENT_DIR = os.path.dirname(__file__)
 SERVICE_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
@@ -56,6 +57,23 @@ class UploaderTests(unittest.TestCase):
             ok, url = upload_file("https://cfbed.sanyue.de/upload?authCode=abc", f.name)
         self.assertTrue(ok)
         self.assertEqual(url, "https://cfbed.sanyue.de/file/abc.jpg")
+
+    @patch("uploader.requests.post")
+    def test_upload_file_retries_on_timeout(self, post):
+        post.side_effect = [ReadTimeout("boom"), DummyResp([{ "src": "/file/abc.jpg" }])]
+        with tempfile.NamedTemporaryFile(suffix=".png") as f:
+            ok, url = upload_file("https://cfbed.sanyue.de/upload?authCode=abc", f.name)
+        self.assertTrue(ok)
+        self.assertEqual(url, "https://cfbed.sanyue.de/file/abc.jpg")
+        self.assertEqual(post.call_count, 2)
+
+    @patch("uploader.requests.post")
+    def test_upload_file_timeout_returns_error(self, post):
+        post.side_effect = ReadTimeout("boom")
+        with tempfile.NamedTemporaryFile(suffix=".png") as f:
+            ok, err = upload_file("https://cfbed.sanyue.de/upload?authCode=abc", f.name)
+        self.assertFalse(ok)
+        self.assertTrue(str(err))
 
     @patch("uploader.upload_file")
     def test_handle_upload_deletes_on_success(self, upload_file_mock):
