@@ -56,6 +56,7 @@
 - **上传 API 地址（CloudFlare ImgBed）**，例如 `https://cfbed.sanyue.de/upload?authCode=xxxx`
 - **上传后删除清理文件**
 - **界面语言**
+- **测试上传**按钮在 ImgBed API 地址旁边，上传内置测试图并显示返回 URL
 
 ## Docker 挂载与目录
 `docker-compose.yml` 把 `${HOME}/Downloads` 挂载到容器内 `/data`。

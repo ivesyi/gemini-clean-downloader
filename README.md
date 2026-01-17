@@ -56,6 +56,7 @@ Available in the extension settings:
 - **Upload API URL (CloudFlare ImgBed)**, e.g. `https://cfbed.sanyue.de/upload?authCode=xxxx`
 - **Delete cleaned files after upload**
 - **UI language**
+- **Test Upload** button next to ImgBed API URL uploads a built‑in test image and shows the returned URL
 
 ## Docker Mount & Folders
 `docker-compose.yml` mounts `${HOME}/Downloads` to `/data` inside the container.
