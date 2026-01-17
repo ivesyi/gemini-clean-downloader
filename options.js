@@ -4,6 +4,9 @@ const DEFAULTS = {
   outputSubdir: 'Gemini-Clean',
   deleteOriginals: false,
   autoClean: true,
+  uploadEnabled: false,
+  uploadApiUrl: '',
+  deleteCleanedAfterUpload: false,
   uiLanguage: 'auto'
 };
 
@@ -17,9 +20,13 @@ const loadSettings = async () => {
   byId('serviceUrl').value = settings.serviceUrl;
   byId('inputSubdir').value = settings.inputSubdir;
   byId('outputSubdir').value = settings.outputSubdir;
+  byId('uploadEnabled').checked = settings.uploadEnabled;
+  byId('uploadApiUrl').value = settings.uploadApiUrl || '';
+  byId('deleteCleanedAfterUpload').checked = settings.deleteCleanedAfterUpload;
   byId('deleteOriginals').checked = settings.deleteOriginals;
   byId('autoClean').checked = settings.autoClean;
   byId('uiLanguage').value = settings.uiLanguage || 'auto';
+  updateUploadState();
 };
 
 const saveSettings = async () => {
@@ -27,6 +34,9 @@ const saveSettings = async () => {
     serviceUrl: byId('serviceUrl').value.trim() || DEFAULTS.serviceUrl,
     inputSubdir: byId('inputSubdir').value.trim() || DEFAULTS.inputSubdir,
     outputSubdir: byId('outputSubdir').value.trim() || DEFAULTS.outputSubdir,
+    uploadEnabled: byId('uploadEnabled').checked,
+    uploadApiUrl: byId('uploadApiUrl').value.trim(),
+    deleteCleanedAfterUpload: byId('deleteCleanedAfterUpload').checked,
     deleteOriginals: byId('deleteOriginals').checked,
     autoClean: byId('autoClean').checked,
     uiLanguage: byId('uiLanguage').value || 'auto'
@@ -64,8 +74,15 @@ const setStatus = (text, type) => {
   }
 };
 
+const updateUploadState = () => {
+  const enabled = byId('uploadEnabled').checked;
+  byId('uploadApiUrl').disabled = !enabled;
+  byId('deleteCleanedAfterUpload').disabled = !enabled;
+};
+
 byId('saveBtn').addEventListener('click', saveSettings);
 byId('testBtn').addEventListener('click', testConnection);
+byId('uploadEnabled').addEventListener('change', updateUploadState);
 
 const init = async () => {
   if (window.GCDI18n?.init) {

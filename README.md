@@ -9,6 +9,8 @@ One-click download of Gemini original images with **local watermark cleaning** p
 - Batch download: download all images in the current conversation.
 - Auto clean after downloads finish (or manual "Clean Now").
 - Optional delete originals after cleaning.
+- Optional upload cleaned images to CloudFlare ImgBed.
+- Optional delete cleaned files after upload.
 - Configurable Result folder (subdir under mounted base).
 - UI language: Auto / English / 简体中文.
 
@@ -50,6 +52,9 @@ Available in the extension settings:
 - **Result folder** (default `Gemini-Clean`)
 - **Delete originals after cleaning**
 - **Auto clean after downloads finish**
+- **Enable ImgBed upload**
+- **Upload API URL (CloudFlare ImgBed)**
+- **Delete cleaned files after upload**
 - **UI language**
 
 ## Docker Mount & Folders
@@ -81,3 +86,4 @@ ${HOME}/Downloads/
 
 ## Limitations
 This removes **visible watermarks only**. It does **not** remove invisible watermarks (e.g. SynthID).
+Upload currently supports **CloudFlare ImgBed only**.

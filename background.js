@@ -5,6 +5,9 @@ const DEFAULT_SETTINGS = {
   outputSubdir: 'Gemini-Clean',
   deleteOriginals: false,
   autoClean: true,
+  uploadEnabled: false,
+  uploadApiUrl: '',
+  deleteCleanedAfterUpload: false,
   debounceMs: 1500
 };
 
@@ -32,7 +35,10 @@ const runClean = async (source = 'manual') => {
     body: JSON.stringify({
       input_subdir: settings.inputSubdir,
       output_subdir: settings.outputSubdir,
-      delete_originals: settings.deleteOriginals
+      delete_originals: settings.deleteOriginals,
+      upload_enabled: settings.uploadEnabled,
+      upload_url: settings.uploadApiUrl,
+      delete_cleaned: settings.deleteCleanedAfterUpload
     })
   });
 
