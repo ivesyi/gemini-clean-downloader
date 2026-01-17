@@ -17,6 +17,14 @@ One-click download of Gemini original images with **local watermark cleaning** p
 2. The **local Docker service** removes visible watermarks and writes cleaned images to the output folder.
 3. If enabled, originals are deleted after cleaning.
 
+## Open‑source References
+- **gemini-watermark-remover** — watermark removal approach (reverse alpha blending).
+- **GemSaver** — Gemini image download flow inspiration.
+
+## Dependencies
+- **FastAPI** — local cleaning service API.
+- **Pillow** — image processing and watermark removal.
+
 ## Quick Start
 1. Clone the repo:
    ```bash
