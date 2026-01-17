@@ -1,0 +1,75 @@
+{
+  "panel_title": {"message": "原图下载"},
+  "panel_count": {
+    "message": "$COUNT$ 张",
+    "placeholders": { "COUNT": { "content": "$1" } }
+  },
+  "btn_download_all": {"message": "批量下载原图"},
+  "btn_download_all_title": {"message": "下载当前对话所有原图"},
+  "btn_clean_now": {"message": "立即清理"},
+  "btn_clean_now_title": {"message": "手动触发本地清理"},
+  "btn_settings": {"message": "设置"},
+  "btn_settings_title": {"message": "打开设置"},
+
+  "status_downloading_single": {"message": "正在下载原图..."},
+  "status_downloaded_single": {"message": "原图下载完成"},
+  "status_download_failed": {"message": "下载失败"},
+  "status_no_images": {"message": "当前对话没有图片"},
+  "status_downloading_batch": {
+    "message": "正在下载 $TOTAL$ 张...",
+    "placeholders": { "TOTAL": { "content": "$1" } }
+  },
+  "status_downloading_progress": {
+    "message": "正在下载第 $INDEX$ / $TOTAL$ 张...",
+    "placeholders": {
+      "INDEX": { "content": "$1" },
+      "TOTAL": { "content": "$2" }
+    }
+  },
+  "status_downloaded_batch": {
+    "message": "已下载 $SUCCESS$ 张",
+    "placeholders": { "SUCCESS": { "content": "$1" } }
+  },
+  "status_downloaded_batch_partial": {
+    "message": "已下载 $SUCCESS$ 张，失败 $FAILED$ 张",
+    "placeholders": {
+      "SUCCESS": { "content": "$1" },
+      "FAILED": { "content": "$2" }
+    }
+  },
+  "status_request_clean": {"message": "正在请求清理..."},
+  "status_clean_result": {
+    "message": "清理完成：成功 $SUCCESS$ 张，失败 $FAILED$ 张",
+    "placeholders": {
+      "SUCCESS": { "content": "$1" },
+      "FAILED": { "content": "$2" }
+    }
+  },
+  "status_clean_failed": {
+    "message": "清理失败：$ERROR$",
+    "placeholders": { "ERROR": { "content": "$1" } }
+  },
+
+  "settings_title": {"message": "Gemini 清理下载器"},
+  "settings_subtitle": {"message": "配置本地 Docker 清理服务"},
+  "label_service_url": {"message": "服务地址"},
+  "label_input_subdir": {"message": "输入目录（挂载根目录下的子目录）"},
+  "label_output_subdir": {"message": "结果目录（挂载根目录下的子目录）"},
+  "label_delete_originals": {"message": "清理后删除原图"},
+  "label_auto_clean": {"message": "下载完成后自动清理"},
+  "label_language": {"message": "界面语言"},
+  "btn_save": {"message": "保存设置"},
+  "btn_test": {"message": "测试连接"},
+  "status_saved": {"message": "已保存"},
+  "status_test_running": {"message": "正在测试..."},
+  "status_test_ok": {"message": "连接正常"},
+  "status_test_fail": {
+    "message": "连接失败：$ERROR$",
+    "placeholders": { "ERROR": { "content": "$1" } }
+  },
+  "hint_docker_mount": {"message": "挂载提示：服务只能访问容器内挂载目录（默认 /data）。输入/输出目录必须是该目录下的子目录。"},
+
+  "lang_auto": {"message": "自动（跟随浏览器）"},
+  "lang_en": {"message": "English"},
+  "lang_zh": {"message": "简体中文"}
+}

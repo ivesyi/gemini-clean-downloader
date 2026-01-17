@@ -4,10 +4,10 @@
 Provide a Chrome MV3 extension that (1) downloads Gemini originals, (2) calls a local Docker service to clean them into a user-selected Result directory, and (3) optionally deletes originals after cleaning.
 
 ## Phases
-- [ ] Phase 1: Plan and setup
-- [ ] Phase 2: Research/gather information
-- [ ] Phase 3: Execute/build
-- [ ] Phase 4: Review and deliver
+- [x] Phase 1: Plan and setup
+- [x] Phase 2: Research/gather information
+- [x] Phase 3: Execute/build
+- [x] Phase 4: Review and deliver
 
 ## Key Questions
 1. How will the extension call the local Docker service (HTTP on localhost)?
@@ -16,9 +16,12 @@ Provide a Chrome MV3 extension that (1) downloads Gemini originals, (2) calls a 
 
 ## Decisions Made
 - Use localhost HTTP API from extension to Docker service.
+- Default Docker mount: ${HOME}/Downloads -> /data.
+- Extension auto-cleans after downloads using debounce.
+- i18n uses Chrome default locale with manual override in settings.
 
 ## Errors Encountered
 - None yet.
 
 ## Status
-**Currently in Phase 1** - Draft design for Docker-backed workflow
+**Currently in Phase 4** - Ready to deliver

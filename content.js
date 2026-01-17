@@ -12,6 +12,11 @@
 
   let isExpanded = false;
   let cachedImages = [];
+  let t = (key, vars) => key;
+
+  const i18nReady = window.GCDI18n?.init
+    ? window.GCDI18n.init().then(() => { t = window.GCDI18n.t; })
+    : Promise.resolve();
 
   // ---------- Utilities ----------
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -39,6 +44,26 @@
     statusEl.textContent = message;
     statusEl.className = `gcd-panel-status gcd-status-${type}`;
     statusEl.style.display = message ? 'block' : 'none';
+  };
+
+  const requestCleanNow = () => {
+    updateStatus(t('status_request_clean'), 'info');
+    chrome.runtime.sendMessage({ action: 'cleanNow' }, (resp) => {
+      if (resp && resp.ok) {
+        updateStatus(t('status_clean_result', { success: resp.data?.success || 0, failed: resp.data?.failed || 0 }), 'success');
+        setTimeout(() => updateStatus(''), 4000);
+      } else {
+        updateStatus(t('status_clean_failed', { error: resp?.error || 'unknown error' }), 'error');
+      }
+    });
+  };
+
+  const openSettings = () => {
+    if (chrome.runtime.openOptionsPage) {
+      chrome.runtime.openOptionsPage();
+    } else {
+      chrome.runtime.sendMessage({ action: 'openOptions' });
+    }
   };
 
   const downloadOriginal = (url, filename) => new Promise((resolve, reject) => {
@@ -102,7 +127,7 @@
       badge.style.display = images.length > 0 ? 'flex' : 'none';
     }
     if (panelCount) {
-      panelCount.textContent = `${images.length} image${images.length !== 1 ? 's' : ''}`;
+      panelCount.textContent = t('panel_count', { count: images.length });
     }
 
     const allBtn = document.querySelector('.gcd-btn-all');
@@ -150,27 +175,48 @@
     panel.className = 'gcd-panel';
     panel.innerHTML = `
       <div class="gcd-panel-header">
-        <span class="gcd-panel-title">Original Downloads</span>
-        <span class="gcd-panel-count">0 images</span>
+        <span class="gcd-panel-title" data-i18n="panel_title">Original Downloads</span>
+        <span class="gcd-panel-count">0</span>
       </div>
       <div class="gcd-panel-buttons">
-        <button class="gcd-panel-btn gcd-btn-all" title="Download all original images">
+        <button class="gcd-panel-btn gcd-btn-all" data-i18n-title="btn_download_all_title" title="Download all original images">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>Download All Originals</span>
+          <span data-i18n="btn_download_all">Download All Originals</span>
+        </button>
+        <button class="gcd-panel-btn gcd-btn-clean" data-i18n-title="btn_clean_now_title" title="Run local cleaner now">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 4H20V9C20 12.3137 17.3137 15 14 15H10C6.68629 15 4 12.3137 4 9V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 19H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 15V19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span data-i18n="btn_clean_now">Clean Now</span>
+        </button>
+        <button class="gcd-panel-btn gcd-btn-settings" data-i18n-title="btn_settings_title" title="Open settings">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 15.5C13.933 15.5 15.5 13.933 15.5 12C15.5 10.067 13.933 8.5 12 8.5C10.067 8.5 8.5 10.067 8.5 12C8.5 13.933 10.067 15.5 12 15.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19.4 15C19.5667 14.5 19.6667 13.8 19.6667 13C19.6667 12.2 19.5667 11.5 19.4 11L21 9L19 5L17 6C16.5 5.83333 15.8 5.73333 15 5.66667L14 3H10L9 5.66667C8.2 5.73333 7.5 5.83333 7 6L5 5L3 9L4.6 11C4.43333 11.5 4.33333 12.2 4.33333 13C4.33333 13.8 4.43333 14.5 4.6 15L3 17L5 21L7 20C7.5 20.1667 8.2 20.2667 9 20.3333L10 23H14L15 20.3333C15.8 20.2667 16.5 20.1667 17 20L19 21L21 17L19.4 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span data-i18n="btn_settings">Settings</span>
         </button>
       </div>
       <div class="gcd-panel-status"></div>
     `;
 
     panel.querySelector('.gcd-btn-all').addEventListener('click', downloadAllOriginals);
+    panel.querySelector('.gcd-btn-clean').addEventListener('click', requestCleanNow);
+    panel.querySelector('.gcd-btn-settings').addEventListener('click', openSettings);
 
     container.appendChild(panel);
     container.appendChild(button);
     document.body.appendChild(container);
+
+    if (window.GCDI18n?.apply) {
+      window.GCDI18n.apply(container);
+    }
 
     updateImageCount();
   };
@@ -200,15 +246,15 @@
       event.stopImmediatePropagation();
 
       const filename = buildFilename(0, 1);
-      updateStatus('Downloading original image...', 'info');
+      updateStatus(t('status_downloading_single'), 'info');
 
       try {
         await downloadOriginal(normalizeToS0(img.src), filename);
-        updateStatus('Downloaded original image', 'success');
+        updateStatus(t('status_downloaded_single'), 'success');
         setTimeout(() => updateStatus(''), 2500);
       } catch (error) {
         console.warn('[Gemini Originals Downloader] Download failed:', error);
-        updateStatus('Download failed', 'error');
+        updateStatus(t('status_download_failed'), 'error');
       }
     }, true);
   };
@@ -217,19 +263,19 @@
   const downloadAllOriginals = async () => {
     const images = findGeneratedImages();
     if (images.length === 0) {
-      updateStatus('No images found in conversation', 'error');
+      updateStatus(t('status_no_images'), 'error');
       return;
     }
 
     const total = Math.min(images.length, CONFIG.maxBatchCount);
-    updateStatus(`Downloading ${total} images...`, 'info');
+    updateStatus(t('status_downloading_batch', { total }), 'info');
 
     let successCount = 0;
     let failCount = 0;
 
     for (let i = 0; i < total; i++) {
       try {
-        updateStatus(`Downloading ${i + 1} of ${total}...`, 'info');
+        updateStatus(t('status_downloading_progress', { index: i + 1, total }), 'info');
         const filename = buildFilename(i, total);
         await downloadOriginal(normalizeToS0(images[i].src), filename);
         successCount++;
@@ -241,9 +287,9 @@
     }
 
     if (failCount === 0) {
-      updateStatus(`Downloaded ${successCount} images`, 'success');
+      updateStatus(t('status_downloaded_batch', { success: successCount }), 'success');
     } else {
-      updateStatus(`Downloaded ${successCount}, failed ${failCount}`, 'warning');
+      updateStatus(t('status_downloaded_batch_partial', { success: successCount, failed: failCount }), 'warning');
     }
 
     setTimeout(() => updateStatus(''), 5000);
@@ -251,11 +297,15 @@
 
   // ---------- Init ----------
   const init = () => {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', createFAB);
-    } else {
-      createFAB();
-    }
+    const start = () => {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', createFAB);
+      } else {
+        createFAB();
+      }
+    };
+
+    i18nReady.then(start);
 
     attachDownloadInterceptor();
 

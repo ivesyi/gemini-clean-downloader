@@ -6,4 +6,5 @@
 
 ## Synthesized Findings
 - Extension must call a localhost service to avoid browser CORS limitations.
-- Service can accept input directory and output directory; optionally delete originals.
+- Service accepts input/output subdirectories under a mounted base and optional delete-originals flag.
+- UI should support auto language plus manual override via settings.

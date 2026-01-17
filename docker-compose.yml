@@ -1,0 +1,8 @@
+services:
+  gemini-cleaner:
+    build: .
+    ports:
+      - "17811:17811"
+    volumes:
+      - ${HOME}/Downloads:/data
+    restart: unless-stopped

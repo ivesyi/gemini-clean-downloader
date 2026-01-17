@@ -1,0 +1,75 @@
+{
+  "panel_title": {"message": "Original Downloads"},
+  "panel_count": {
+    "message": "$COUNT$ images",
+    "placeholders": { "COUNT": { "content": "$1" } }
+  },
+  "btn_download_all": {"message": "Download All Originals"},
+  "btn_download_all_title": {"message": "Download all original images"},
+  "btn_clean_now": {"message": "Clean Now"},
+  "btn_clean_now_title": {"message": "Run local cleaner now"},
+  "btn_settings": {"message": "Settings"},
+  "btn_settings_title": {"message": "Open settings"},
+
+  "status_downloading_single": {"message": "Downloading original image..."},
+  "status_downloaded_single": {"message": "Downloaded original image"},
+  "status_download_failed": {"message": "Download failed"},
+  "status_no_images": {"message": "No images found in conversation"},
+  "status_downloading_batch": {
+    "message": "Downloading $TOTAL$ images...",
+    "placeholders": { "TOTAL": { "content": "$1" } }
+  },
+  "status_downloading_progress": {
+    "message": "Downloading $INDEX$ of $TOTAL$...",
+    "placeholders": {
+      "INDEX": { "content": "$1" },
+      "TOTAL": { "content": "$2" }
+    }
+  },
+  "status_downloaded_batch": {
+    "message": "Downloaded $SUCCESS$ images",
+    "placeholders": { "SUCCESS": { "content": "$1" } }
+  },
+  "status_downloaded_batch_partial": {
+    "message": "Downloaded $SUCCESS$, failed $FAILED$",
+    "placeholders": {
+      "SUCCESS": { "content": "$1" },
+      "FAILED": { "content": "$2" }
+    }
+  },
+  "status_request_clean": {"message": "Requesting clean..."},
+  "status_clean_result": {
+    "message": "Cleaned: $SUCCESS$ ok, $FAILED$ failed",
+    "placeholders": {
+      "SUCCESS": { "content": "$1" },
+      "FAILED": { "content": "$2" }
+    }
+  },
+  "status_clean_failed": {
+    "message": "Clean failed: $ERROR$",
+    "placeholders": { "ERROR": { "content": "$1" } }
+  },
+
+  "settings_title": {"message": "Gemini Clean Downloader"},
+  "settings_subtitle": {"message": "Configure the local Docker cleaning service."},
+  "label_service_url": {"message": "Service URL"},
+  "label_input_subdir": {"message": "Input folder (subdir under mounted base)"},
+  "label_output_subdir": {"message": "Result folder (subdir under mounted base)"},
+  "label_delete_originals": {"message": "Delete originals after cleaning"},
+  "label_auto_clean": {"message": "Auto clean after downloads finish"},
+  "label_language": {"message": "UI language"},
+  "btn_save": {"message": "Save Settings"},
+  "btn_test": {"message": "Test Connection"},
+  "status_saved": {"message": "Saved."},
+  "status_test_running": {"message": "Testing..."},
+  "status_test_ok": {"message": "OK"},
+  "status_test_fail": {
+    "message": "Failed: $ERROR$",
+    "placeholders": { "ERROR": { "content": "$1" } }
+  },
+  "hint_docker_mount": {"message": "Docker mount reminder: The service only sees the directory mounted into the container (default /data). Your input/output folders must be subdirectories inside that mount."},
+
+  "lang_auto": {"message": "Auto (browser)"},
+  "lang_en": {"message": "English"},
+  "lang_zh": {"message": "简体中文"}
+}

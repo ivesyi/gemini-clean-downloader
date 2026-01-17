@@ -163,13 +163,13 @@
   line-height: 1;
 }
 
-.gcd-btn-latest {
-  background: #e8f0fe;
-  color: #1a73e8;
+.gcd-btn-clean {
+  background: #e6f4ea;
+  color: #137333;
 }
 
-.gcd-btn-latest:hover:not(:disabled) {
-  background: #d2e3fc;
+.gcd-btn-clean:hover:not(:disabled) {
+  background: #ceead6;
 }
 
 .gcd-btn-all {
@@ -180,6 +180,15 @@
 .gcd-btn-all:hover:not(:disabled) {
   background: linear-gradient(135deg, #5a95f5 0%, #2b7de9 100%);
   box-shadow: 0 2px 8px rgba(66, 133, 244, 0.4);
+}
+
+.gcd-btn-settings {
+  background: #f1f3f4;
+  color: #5f6368;
+}
+
+.gcd-btn-settings:hover:not(:disabled) {
+  background: #e8eaed;
 }
 
 .gcd-panel-btn:disabled {
@@ -243,13 +252,13 @@
     color: #9aa0a6;
   }
 
-  .gcd-btn-latest {
-    background: #394457;
-    color: #8ab4f8;
+  .gcd-btn-clean {
+    background: #2d4a3e;
+    color: #81c995;
   }
 
-  .gcd-btn-latest:hover:not(:disabled) {
-    background: #4a5568;
+  .gcd-btn-clean:hover:not(:disabled) {
+    background: #365946;
   }
 
   .gcd-status-info {
@@ -297,3 +306,11 @@
     bottom: 60px;
   }
 }
+  .gcd-btn-settings {
+    background: #3c4043;
+    color: #9aa0a6;
+  }
+
+  .gcd-btn-settings:hover:not(:disabled) {
+    background: #4a4f53;
+  }

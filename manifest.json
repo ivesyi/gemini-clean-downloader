@@ -2,26 +2,34 @@
   "manifest_version": 3,
   "name": "Gemini Clean Downloader",
   "version": "0.1.0",
-  "description": "One-click single and batch download of Gemini originals (for offline watermark removal).",
+  "description": "Download Gemini originals and trigger local Docker cleaner.",
   "permissions": [
     "activeTab",
-    "downloads"
+    "downloads",
+    "storage"
   ],
   "host_permissions": [
     "https://gemini.google.com/*",
     "https://lh3.googleusercontent.com/*",
-    "https://lh3.google.com/*"
+    "https://lh3.google.com/*",
+    "http://127.0.0.1/*",
+    "http://localhost/*"
   ],
   "content_scripts": [
     {
       "matches": ["https://gemini.google.com/*"],
-      "js": ["content.js"],
+      "js": ["i18n.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
     }
   ],
   "background": {
     "service_worker": "background.js"
+  },
+  "default_locale": "en",
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
   },
   "web_accessible_resources": [],
   "icons": {

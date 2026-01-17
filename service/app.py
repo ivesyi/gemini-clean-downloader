@@ -1,0 +1,175 @@
+import os
+from pathlib import Path
+from typing import Optional
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from PIL import Image
+
+ALPHA_THRESHOLD = 0.002
+MAX_ALPHA = 0.99
+LOGO_VALUE = 255
+
+BASE_DIR = Path(os.environ.get("BASE_DIR", "/data")).resolve()
+DEFAULT_INPUT = os.environ.get("DEFAULT_INPUT", "Gemini-Originals")
+DEFAULT_OUTPUT = os.environ.get("DEFAULT_OUTPUT", "Gemini-Clean")
+
+app = FastAPI(title="Gemini Clean Service", version="0.1.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+class CleanRequest(BaseModel):
+    input_subdir: Optional[str] = None
+    output_subdir: Optional[str] = None
+    delete_originals: bool = False
+
+
+class CleanResponse(BaseModel):
+    total: int
+    success: int
+    failed: int
+    output_dir: str
+
+
+ALPHA_48 = None
+ALPHA_96 = None
+
+
+def load_alpha_map(bg_path: Path):
+    img = Image.open(bg_path).convert("RGB")
+    width, height = img.size
+    data = list(img.getdata())
+    alpha_map = [0.0] * (width * height)
+    for i, (r, g, b) in enumerate(data):
+        alpha_map[i] = max(r, g, b) / 255.0
+    return alpha_map
+
+
+def detect_config(width: int, height: int):
+    if width > 1024 and height > 1024:
+        return {"size": 96, "margin_right": 64, "margin_bottom": 64}
+    return {"size": 48, "margin_right": 32, "margin_bottom": 32}
+
+
+def remove_watermark(image: Image.Image, alpha_map, wm_size, pos_x, pos_y):
+    pixels = image.load()
+    width, height = image.size
+
+    for row in range(wm_size):
+        for col in range(wm_size):
+            x = pos_x + col
+            y = pos_y + row
+            if x < 0 or y < 0 or x >= width or y >= height:
+                continue
+
+            alpha = alpha_map[row * wm_size + col]
+            if alpha < ALPHA_THRESHOLD:
+                continue
+
+            alpha = min(alpha, MAX_ALPHA)
+            one_minus = 1.0 - alpha
+            r, g, b, a = pixels[x, y]
+            r = int(max(0, min(255, round((r - alpha * LOGO_VALUE) / one_minus))))
+            g = int(max(0, min(255, round((g - alpha * LOGO_VALUE) / one_minus))))
+            b = int(max(0, min(255, round((b - alpha * LOGO_VALUE) / one_minus))))
+            pixels[x, y] = (r, g, b, a)
+
+    return image
+
+
+def resolve_subdir(subdir: str) -> Path:
+    if subdir.startswith("/"):
+        raise HTTPException(status_code=400, detail="Absolute paths are not allowed")
+    candidate = (BASE_DIR / subdir).resolve()
+    if BASE_DIR not in candidate.parents and candidate != BASE_DIR:
+        raise HTTPException(status_code=400, detail="Path escapes base directory")
+    return candidate
+
+
+def iter_images(input_dir: Path):
+    exts = {".png", ".jpg", ".jpeg", ".webp"}
+    for entry in sorted(input_dir.iterdir()):
+        if entry.is_file() and entry.suffix.lower() in exts:
+            yield entry
+
+
+def process_file(path: Path, output_dir: Path, delete_originals: bool):
+    try:
+        img = Image.open(path).convert("RGBA")
+    except Exception as exc:
+        return False, f"open failed: {exc}"
+
+    width, height = img.size
+    config = detect_config(width, height)
+    wm_size = config["size"]
+    pos_x = width - config["margin_right"] - wm_size
+    pos_y = height - config["margin_bottom"] - wm_size
+
+    if pos_x < 0 or pos_y < 0:
+        return False, "image too small"
+
+    alpha_map = ALPHA_96 if wm_size == 96 else ALPHA_48
+    remove_watermark(img, alpha_map, wm_size, pos_x, pos_y)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    out_name = path.stem + "_clean.png"
+    out_path = output_dir / out_name
+
+    try:
+        img.save(out_path, format="PNG")
+    except Exception as exc:
+        return False, f"save failed: {exc}"
+
+    if delete_originals:
+        try:
+            path.unlink()
+        except Exception:
+            pass
+
+    return True, str(out_path)
+
+
+@app.on_event("startup")
+def load_assets():
+    global ALPHA_48, ALPHA_96
+    assets_dir = Path(__file__).resolve().parent / "assets"
+    ALPHA_48 = load_alpha_map(assets_dir / "bg_48.png")
+    ALPHA_96 = load_alpha_map(assets_dir / "bg_96.png")
+
+
+@app.get("/health")
+def health():
+    return {"ok": True}
+
+
+@app.post("/clean", response_model=CleanResponse)
+def clean_images(request: CleanRequest):
+    input_subdir = request.input_subdir or DEFAULT_INPUT
+    output_subdir = request.output_subdir or DEFAULT_OUTPUT
+
+    input_dir = resolve_subdir(input_subdir)
+    output_dir = resolve_subdir(output_subdir)
+
+    if not input_dir.exists():
+        raise HTTPException(status_code=400, detail=f"Input directory not found: {input_dir}")
+
+    total = 0
+    success = 0
+    failed = 0
+
+    for image_path in iter_images(input_dir):
+        total += 1
+        ok, _ = process_file(image_path, output_dir, request.delete_originals)
+        if ok:
+            success += 1
+        else:
+            failed += 1
+
+    return CleanResponse(total=total, success=success, failed=failed, output_dir=str(output_dir))

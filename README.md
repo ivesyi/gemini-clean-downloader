@@ -1,36 +1,74 @@
-# Gemini Originals Downloader (Two-Step Workflow)
+# Gemini Clean Downloader
 
-This extension downloads **original Gemini images** in bulk. Use the bundled script to remove visible watermarks **offline**.
+[English] | [简体中文](README.zh-CN.md)
 
-## Step 1: Install Extension (Load Unpacked)
-1. Open Chrome → `chrome://extensions/`
-2. Enable **Developer mode**
-3. Click **Load unpacked**
-4. Select this folder: `gemini-clean-downloader-ext`
+One-click download of Gemini original images with **local watermark cleaning** powered by a Docker service.
 
-## Step 2: Download Originals
-- Go to `https://gemini.google.com/`
-- **Single image**: click Gemini's native Download button (extension intercepts and downloads original)
-- **Batch**: click the floating button (bottom-right) → “Download All Originals”
+## Features
+- Single download: intercepts Gemini's native Download button to save **originals**.
+- Batch download: download all images in the current conversation.
+- Auto clean after downloads finish (or manual "Clean Now").
+- Optional delete originals after cleaning.
+- Configurable Result folder (subdir under mounted base).
+- UI language: Auto / English / 简体中文.
 
-Files are saved to: `Downloads/Gemini-Originals/`
+## How It Works
+1. The **Chrome extension** downloads originals into an input folder.
+2. The **local Docker service** removes visible watermarks and writes cleaned images to the output folder.
+3. If enabled, originals are deleted after cleaning.
 
-## Step 3: Remove Watermarks Offline
-Install Pillow once:
-```bash
-pip install pillow
+## Quick Start
+1. Start the local service:
+   ```bash
+   docker compose up -d
+   ```
+2. Load the extension:
+   - Chrome → `chrome://extensions/`
+   - Enable **Developer mode**
+   - Click **Load unpacked** → select this folder
+3. Open Gemini and configure settings in the panel → **Settings**.
+
+## Usage
+- **Single image**: click Gemini's built‑in Download button.
+- **Batch**: panel → **Download All Originals**.
+- If **Auto clean** is ON, cleaning runs automatically.
+- If OFF, click **Clean Now**.
+
+## Settings
+Available in the extension settings:
+- **Service URL** (default `http://127.0.0.1:17811`)
+- **Input folder** (default `Gemini-Originals`)
+- **Result folder** (default `Gemini-Clean`)
+- **Delete originals after cleaning**
+- **Auto clean after downloads finish**
+- **UI language**
+
+## Docker Mount & Folders
+`docker-compose.yml` mounts `${HOME}/Downloads` to `/data` inside the container.
+
+Your input/output folders must be **subdirectories under that mount**:
+
+```
+${HOME}/Downloads/
+  Gemini-Originals/   # input (default)
+  Gemini-Clean/       # output (default)
 ```
 
-Run the cleaning script:
-```bash
-python3 tools/clean_images.py --input ~/Downloads/Gemini-Originals --output ~/Downloads/Gemini-Clean
-```
+## Local Service API
+- `GET /health` → health check
+- `POST /clean`
+  ```json
+  {
+    "input_subdir": "Gemini-Originals",
+    "output_subdir": "Gemini-Clean",
+    "delete_originals": false
+  }
+  ```
 
-Cleaned files will be written to: `~/Downloads/Gemini-Clean`
+## Troubleshooting
+- **Test Connection** in Settings to verify service reachability.
+- Ensure Docker is running: `docker compose ps`.
+- Make sure input/output folders are under the mounted base directory.
 
-## Notes
-- Removes only **visible** Gemini watermark. Invisible watermarks (e.g., SynthID) are not removed.
-- Output format is PNG (`*_clean.png`).
-
-## Disclaimer
-Watermark removal may have legal or policy implications depending on your use case. You are responsible for ensuring compliance.
+## Limitations
+This removes **visible watermarks only**. It does **not** remove invisible watermarks (e.g. SynthID).
