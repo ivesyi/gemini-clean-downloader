@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Gemini Clean Downloader",
+  "version": "0.1.0",
+  "description": "One-click single and batch download of Gemini originals (for offline watermark removal).",
+  "permissions": [
+    "activeTab",
+    "downloads"
+  ],
+  "host_permissions": [
+    "https://gemini.google.com/*",
+    "https://lh3.googleusercontent.com/*",
+    "https://lh3.google.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://gemini.google.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
