@@ -50,7 +50,18 @@
     updateStatus(t('status_request_clean'), 'info');
     chrome.runtime.sendMessage({ action: 'cleanNow' }, (resp) => {
       if (resp && resp.ok) {
-        updateStatus(t('status_clean_result', { success: resp.data?.success || 0, failed: resp.data?.failed || 0 }), 'success');
+        const data = resp.data || {};
+        const uploadTotal = data.upload_total || 0;
+        if (uploadTotal > 0) {
+          updateStatus(t('status_clean_upload_result', {
+            success: data.success || 0,
+            failed: data.failed || 0,
+            upload_success: data.upload_success || 0,
+            upload_failed: data.upload_failed || 0
+          }), 'success');
+        } else {
+          updateStatus(t('status_clean_result', { success: data.success || 0, failed: data.failed || 0 }), 'success');
+        }
         setTimeout(() => updateStatus(''), 4000);
       } else {
         updateStatus(t('status_clean_failed', { error: resp?.error || 'unknown error' }), 'error');

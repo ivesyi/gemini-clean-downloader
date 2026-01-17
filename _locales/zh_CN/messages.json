@@ -45,6 +45,15 @@
       "FAILED": { "content": "$2" }
     }
   },
+  "status_clean_upload_result": {
+    "message": "清理完成：成功 $SUCCESS$ 张，失败 $FAILED$ 张。上传成功 $UPLOAD_SUCCESS$ 张，失败 $UPLOAD_FAILED$ 张",
+    "placeholders": {
+      "SUCCESS": { "content": "$1" },
+      "FAILED": { "content": "$2" },
+      "UPLOAD_SUCCESS": { "content": "$3" },
+      "UPLOAD_FAILED": { "content": "$4" }
+    }
+  },
   "status_clean_failed": {
     "message": "清理失败：$ERROR$",
     "placeholders": { "ERROR": { "content": "$1" } }
@@ -55,6 +64,9 @@
   "label_service_url": {"message": "服务地址"},
   "label_input_subdir": {"message": "输入目录（挂载根目录下的子目录）"},
   "label_output_subdir": {"message": "结果目录（挂载根目录下的子目录）"},
+  "label_upload_enabled": {"message": "启用 ImgBed 上传"},
+  "label_upload_api_url": {"message": "ImgBed 上传 API 地址"},
+  "label_delete_cleaned": {"message": "上传后删除清理文件"},
   "label_delete_originals": {"message": "清理后删除原图"},
   "label_auto_clean": {"message": "下载完成后自动清理"},
   "label_language": {"message": "界面语言"},

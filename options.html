@@ -24,6 +24,18 @@
           <span data-i18n="label_output_subdir">Result folder (subdir under mounted base)</span>
           <input id="outputSubdir" type="text" data-i18n-placeholder="label_output_subdir" placeholder="Gemini-Clean" />
         </label>
+        <label class="checkbox">
+          <input id="uploadEnabled" type="checkbox" />
+          <span data-i18n="label_upload_enabled">Enable ImgBed upload</span>
+        </label>
+        <label>
+          <span data-i18n="label_upload_api_url">ImgBed Upload API URL</span>
+          <input id="uploadApiUrl" type="text" data-i18n-placeholder="label_upload_api_url" placeholder="https://cfbed.sanyue.de/upload?authCode=xxxx" />
+        </label>
+        <label class="checkbox">
+          <input id="deleteCleanedAfterUpload" type="checkbox" />
+          <span data-i18n="label_delete_cleaned">Delete cleaned files after upload</span>
+        </label>
         <label>
           <span data-i18n="label_language">UI language</span>
           <select id="uiLanguage">
