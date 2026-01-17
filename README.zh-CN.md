@@ -18,15 +18,20 @@
 3. 如开启删除原图，清理完成后会删除输入目录里的原图。
 
 ## 快速开始
-1. 启动本地服务：
+1. 克隆仓库：
+   ```bash
+   git clone git@github.com:ivesyi/gemini-clean-downloader.git
+   cd gemini-clean-downloader
+   ```
+2. 启动本地服务：
    ```bash
    docker compose up -d
    ```
-2. 安装扩展：
+3. 安装扩展：
    - Chrome → `chrome://extensions/`
    - 打开 **开发者模式**
-   - 点击 **加载已解压的扩展程序** → 选择本目录
-3. 打开 Gemini，并在面板 → **设置** 中完成配置。
+   - 点击 **加载已解压的扩展程序** → 选择本目录（`gemini-clean-downloader`）
+4. 打开 Gemini，并在面板 → **设置** 中完成配置。
 
 ## 使用方式
 - **单张**：点击 Gemini 自带的下载按钮。

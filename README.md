@@ -18,15 +18,20 @@ One-click download of Gemini original images with **local watermark cleaning** p
 3. If enabled, originals are deleted after cleaning.
 
 ## Quick Start
-1. Start the local service:
+1. Clone the repo:
+   ```bash
+   git clone git@github.com:ivesyi/gemini-clean-downloader.git
+   cd gemini-clean-downloader
+   ```
+2. Start the local service:
    ```bash
    docker compose up -d
    ```
-2. Load the extension:
+3. Load the extension:
    - Chrome → `chrome://extensions/`
    - Enable **Developer mode**
-   - Click **Load unpacked** → select this folder
-3. Open Gemini and configure settings in the panel → **Settings**.
+   - Click **Load unpacked** → select this folder (`gemini-clean-downloader`)
+4. Open Gemini and configure settings in the panel → **Settings**.
 
 ## Usage
 - **Single image**: click Gemini's built‑in Download button.
