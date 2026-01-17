@@ -65,7 +65,7 @@
   "label_input_subdir": {"message": "输入目录（挂载根目录下的子目录）"},
   "label_output_subdir": {"message": "结果目录（挂载根目录下的子目录）"},
   "label_upload_enabled": {"message": "启用 ImgBed 上传"},
-  "label_upload_api_url": {"message": "ImgBed 上传 API 地址"},
+  "label_upload_api_url": {"message": "ImgBed 上传 API 地址（例如 https://cfbed.sanyue.de/upload?authCode=xxxx）"},
   "label_delete_cleaned": {"message": "上传后删除清理文件"},
   "placeholder_upload_api_url": {"message": "https://cfbed.sanyue.de/upload?authCode=xxxx"},
   "label_delete_originals": {"message": "清理后删除原图"},
