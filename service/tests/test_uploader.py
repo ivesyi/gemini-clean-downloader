@@ -9,7 +9,7 @@ SERVICE_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
 if SERVICE_DIR not in sys.path:
     sys.path.insert(0, SERVICE_DIR)
 
-from uploader import build_full_url, parse_upload_response, upload_file
+from uploader import build_full_url, parse_upload_response, upload_file, handle_upload
 
 
 class DummyResp:
@@ -56,6 +56,25 @@ class UploaderTests(unittest.TestCase):
             ok, url = upload_file("https://cfbed.sanyue.de/upload?authCode=abc", f.name)
         self.assertTrue(ok)
         self.assertEqual(url, "https://cfbed.sanyue.de/file/abc.jpg")
+
+    @patch("uploader.upload_file")
+    def test_handle_upload_deletes_on_success(self, upload_file_mock):
+        upload_file_mock.return_value = (True, "https://cfbed.sanyue.de/file/abc.jpg")
+        tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+        tmp.close()
+        try:
+            ok, url, deleted = handle_upload(
+                "https://cfbed.sanyue.de/upload?authCode=abc",
+                tmp.name,
+                delete_after=True,
+            )
+            self.assertTrue(ok)
+            self.assertEqual(url, "https://cfbed.sanyue.de/file/abc.jpg")
+            self.assertTrue(deleted)
+            self.assertFalse(os.path.exists(tmp.name))
+        finally:
+            if os.path.exists(tmp.name):
+                os.remove(tmp.name)
 
 
 if __name__ == "__main__":

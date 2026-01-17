@@ -7,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from PIL import Image
 
+from uploader import handle_upload
+
 ALPHA_THRESHOLD = 0.002
 MAX_ALPHA = 0.99
 LOGO_VALUE = 255
@@ -29,6 +31,9 @@ class CleanRequest(BaseModel):
     input_subdir: Optional[str] = None
     output_subdir: Optional[str] = None
     delete_originals: bool = False
+    upload_enabled: bool = False
+    upload_url: Optional[str] = None
+    delete_cleaned: bool = False
 
 
 class CleanResponse(BaseModel):
@@ -36,6 +41,10 @@ class CleanResponse(BaseModel):
     success: int
     failed: int
     output_dir: str
+    upload_total: int = 0
+    upload_success: int = 0
+    upload_failed: int = 0
+    uploaded_urls: list[str] = []
 
 
 ALPHA_48 = None
@@ -153,6 +162,8 @@ def health():
 def clean_images(request: CleanRequest):
     input_subdir = request.input_subdir or DEFAULT_INPUT
     output_subdir = request.output_subdir or DEFAULT_OUTPUT
+    if request.upload_enabled and not request.upload_url:
+        raise HTTPException(status_code=400, detail="upload_url is required when upload is enabled")
 
     input_dir = resolve_subdir(input_subdir)
     output_dir = resolve_subdir(output_subdir)
@@ -163,13 +174,38 @@ def clean_images(request: CleanRequest):
     total = 0
     success = 0
     failed = 0
+    upload_total = 0
+    upload_success = 0
+    upload_failed = 0
+    uploaded_urls: list[str] = []
 
     for image_path in iter_images(input_dir):
         total += 1
-        ok, _ = process_file(image_path, output_dir, request.delete_originals)
+        ok, result = process_file(image_path, output_dir, request.delete_originals)
         if ok:
             success += 1
+            if request.upload_enabled and request.upload_url:
+                upload_total += 1
+                upload_ok, upload_result, _ = handle_upload(
+                    request.upload_url,
+                    result,
+                    request.delete_cleaned,
+                )
+                if upload_ok:
+                    upload_success += 1
+                    uploaded_urls.append(upload_result)
+                else:
+                    upload_failed += 1
         else:
             failed += 1
 
-    return CleanResponse(total=total, success=success, failed=failed, output_dir=str(output_dir))
+    return CleanResponse(
+        total=total,
+        success=success,
+        failed=failed,
+        output_dir=str(output_dir),
+        upload_total=upload_total,
+        upload_success=upload_success,
+        upload_failed=upload_failed,
+        uploaded_urls=uploaded_urls,
+    )

@@ -1,4 +1,5 @@
 from urllib.parse import urlparse
+import os
 import requests
 
 
@@ -30,3 +31,15 @@ def upload_file(api_url: str, file_path: str, timeout: int = 30):
     if not src:
         return False, "missing src"
     return True, build_full_url(api_url, src)
+
+
+def handle_upload(api_url: str, file_path: str, delete_after: bool):
+    ok, result = upload_file(api_url, file_path)
+    deleted = False
+    if ok and delete_after:
+        try:
+            os.remove(file_path)
+            deleted = True
+        except Exception:
+            deleted = False
+    return ok, result, deleted
