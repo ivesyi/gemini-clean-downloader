@@ -75,7 +75,10 @@ ${HOME}/Downloads/
   {
     "input_subdir": "Gemini-Originals",
     "output_subdir": "Gemini-Clean",
-    "delete_originals": false
+    "delete_originals": false,
+    "upload_enabled": false,
+    "upload_url": "https://cfbed.sanyue.de/upload?authCode=xxxx",
+    "delete_cleaned": false
   }
   ```
 
