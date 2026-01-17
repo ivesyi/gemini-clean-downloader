@@ -21,10 +21,6 @@
 - [**gemini-watermark-remover**](https://github.com/journey-ad/gemini-watermark-remover) — 去水印算法思路（反向 Alpha 混合）。
 - [**GemSaver**](https://github.com/brucevanfdm/GemSaver) — Gemini 图片下载流程参考。
 
-## 依赖库
-- **FastAPI** — 本地清理服务 API。
-- **Pillow** — 图像处理与去水印。
-
 ## 快速开始
 1. 克隆仓库：
    ```bash

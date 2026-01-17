@@ -21,10 +21,6 @@ One-click download of Gemini original images with **local watermark cleaning** p
 - [**gemini-watermark-remover**](https://github.com/journey-ad/gemini-watermark-remover) — watermark removal approach (reverse alpha blending).
 - [**GemSaver**](https://github.com/brucevanfdm/GemSaver) — Gemini image download flow inspiration.
 
-## Dependencies
-- **FastAPI** — local cleaning service API.
-- **Pillow** — image processing and watermark removal.
-
 ## Quick Start
 1. Clone the repo:
    ```bash
