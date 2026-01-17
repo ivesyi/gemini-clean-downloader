@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from PIL import Image
 
-from uploader import handle_upload
+from uploader import handle_upload, upload_file
 
 ALPHA_THRESHOLD = 0.002
 MAX_ALPHA = 0.99
@@ -16,6 +16,7 @@ LOGO_VALUE = 255
 BASE_DIR = Path(os.environ.get("BASE_DIR", "/data")).resolve()
 DEFAULT_INPUT = os.environ.get("DEFAULT_INPUT", "Gemini-Originals")
 DEFAULT_OUTPUT = os.environ.get("DEFAULT_OUTPUT", "Gemini-Clean")
+TEST_IMAGE_PATH = Path(__file__).resolve().parent / "assets" / "test_upload.png"
 
 app = FastAPI(title="Gemini Clean Service", version="0.1.0")
 app.add_middleware(
@@ -45,6 +46,15 @@ class CleanResponse(BaseModel):
     upload_success: int = 0
     upload_failed: int = 0
     uploaded_urls: list[str] = []
+
+
+class UploadTestRequest(BaseModel):
+    upload_url: str
+
+
+class UploadTestResponse(BaseModel):
+    ok: bool
+    url: str
 
 
 ALPHA_48 = None
@@ -209,3 +219,15 @@ def clean_images(request: CleanRequest):
         upload_failed=upload_failed,
         uploaded_urls=uploaded_urls,
     )
+
+
+@app.post("/upload-test", response_model=UploadTestResponse)
+def upload_test(request: UploadTestRequest):
+    if not request.upload_url.strip():
+        raise HTTPException(status_code=400, detail="upload_url is required")
+    if not TEST_IMAGE_PATH.exists():
+        raise HTTPException(status_code=500, detail="test image missing")
+    ok, result = upload_file(request.upload_url, str(TEST_IMAGE_PATH))
+    if not ok:
+        raise HTTPException(status_code=400, detail=str(result))
+    return UploadTestResponse(ok=True, url=result)
