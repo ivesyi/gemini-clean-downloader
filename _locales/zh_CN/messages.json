@@ -70,6 +70,25 @@
   "placeholder_upload_api_url": {"message": "https://cfbed.sanyue.de/upload?authCode=xxxx"},
   "label_delete_originals": {"message": "去水印后删除原图"},
   "label_auto_clean": {"message": "下载完成后自动去水印"},
+  "status_watermark_progress": {
+    "message": "去水印：$DONE$/$TOTAL$，失败 $FAILED$。上传：$UPLOAD_DONE$/$UPLOAD_TOTAL$，失败 $UPLOAD_FAILED$",
+    "placeholders": {
+      "DONE": { "content": "$1" },
+      "TOTAL": { "content": "$2" },
+      "FAILED": { "content": "$3" },
+      "UPLOAD_DONE": { "content": "$4" },
+      "UPLOAD_TOTAL": { "content": "$5" },
+      "UPLOAD_FAILED": { "content": "$6" }
+    }
+  },
+  "status_watermark_progress_no_upload": {
+    "message": "去水印：$DONE$/$TOTAL$，失败 $FAILED$",
+    "placeholders": {
+      "DONE": { "content": "$1" },
+      "TOTAL": { "content": "$2" },
+      "FAILED": { "content": "$3" }
+    }
+  },
   "label_language": {"message": "界面语言"},
   "btn_upload_test": {"message": "测试上传"},
   "btn_save": {"message": "保存设置"},

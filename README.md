@@ -11,6 +11,7 @@ One-click download of Gemini original images with **local watermark removal** po
 - Optional delete originals after watermark removal.
 - Optional upload watermark‑removed images to CloudFlare ImgBed.
 - Optional delete watermark‑removed files after upload.
+- Watermark removal and upload progress shown in the panel (updates every 1s).
 - Configurable Result folder (subdir under mounted base).
 - UI language: Auto / English / 简体中文.
 

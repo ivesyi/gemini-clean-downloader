@@ -1,4 +1,6 @@
 import os
+import threading
+import uuid
 from pathlib import Path
 from typing import Optional
 
@@ -48,6 +50,22 @@ class CleanResponse(BaseModel):
     uploaded_urls: list[str] = []
 
 
+class CleanStartResponse(BaseModel):
+    job_id: str
+
+
+class CleanStatusResponse(BaseModel):
+    job_id: str
+    total: int
+    success: int
+    failed: int
+    upload_total: int = 0
+    upload_success: int = 0
+    upload_failed: int = 0
+    done: bool
+    error: Optional[str] = None
+
+
 class UploadTestRequest(BaseModel):
     upload_url: str
 
@@ -59,6 +77,9 @@ class UploadTestResponse(BaseModel):
 
 ALPHA_48 = None
 ALPHA_96 = None
+
+JOBS: dict[str, dict] = {}
+JOBS_LOCK = threading.Lock()
 
 
 def load_alpha_map(bg_path: Path):
@@ -155,6 +176,102 @@ def process_file(path: Path, output_dir: Path, delete_originals: bool):
     return True, str(out_path)
 
 
+def init_job(job_id: str, total: int):
+    with JOBS_LOCK:
+        JOBS[job_id] = {
+            "job_id": job_id,
+            "total": total,
+            "success": 0,
+            "failed": 0,
+            "upload_total": 0,
+            "upload_success": 0,
+            "upload_failed": 0,
+            "done": False,
+            "error": None,
+        }
+
+
+def update_job(job_id: str, **updates):
+    with JOBS_LOCK:
+        job = JOBS.get(job_id)
+        if not job:
+            return
+        job.update(updates)
+
+
+def get_job(job_id: str):
+    with JOBS_LOCK:
+        job = JOBS.get(job_id)
+        if not job:
+            return None
+        return dict(job)
+
+
+def run_clean_loop(images, output_dir: Path, request: CleanRequest, job_id: Optional[str] = None):
+    total = len(images)
+    success = 0
+    failed = 0
+    upload_total = 0
+    upload_success = 0
+    upload_failed = 0
+    uploaded_urls: list[str] = []
+
+    for image_path in images:
+        ok, result = process_file(image_path, output_dir, request.delete_originals)
+        if ok:
+            success += 1
+            if request.upload_enabled and request.upload_url:
+                upload_total += 1
+                upload_ok, upload_result, _ = handle_upload(
+                    request.upload_url,
+                    result,
+                    request.delete_cleaned,
+                )
+                if upload_ok:
+                    upload_success += 1
+                    uploaded_urls.append(upload_result)
+                else:
+                    upload_failed += 1
+        else:
+            failed += 1
+
+        if job_id:
+            update_job(
+                job_id,
+                success=success,
+                failed=failed,
+                upload_total=upload_total,
+                upload_success=upload_success,
+                upload_failed=upload_failed,
+            )
+
+    return {
+        "total": total,
+        "success": success,
+        "failed": failed,
+        "upload_total": upload_total,
+        "upload_success": upload_success,
+        "upload_failed": upload_failed,
+        "uploaded_urls": uploaded_urls,
+    }
+
+
+def run_clean_job(job_id: str, images, output_dir: Path, request: CleanRequest):
+    try:
+        result = run_clean_loop(images, output_dir, request, job_id=job_id)
+        update_job(
+            job_id,
+            success=result["success"],
+            failed=result["failed"],
+            upload_total=result["upload_total"],
+            upload_success=result["upload_success"],
+            upload_failed=result["upload_failed"],
+            done=True,
+        )
+    except Exception as exc:
+        update_job(job_id, error=str(exc), done=True)
+
+
 @app.on_event("startup")
 def load_assets():
     global ALPHA_48, ALPHA_96
@@ -181,43 +298,66 @@ def clean_images(request: CleanRequest):
     if not input_dir.exists():
         raise HTTPException(status_code=400, detail=f"Input directory not found: {input_dir}")
 
-    total = 0
-    success = 0
-    failed = 0
-    upload_total = 0
-    upload_success = 0
-    upload_failed = 0
-    uploaded_urls: list[str] = []
-
-    for image_path in iter_images(input_dir):
-        total += 1
-        ok, result = process_file(image_path, output_dir, request.delete_originals)
-        if ok:
-            success += 1
-            if request.upload_enabled and request.upload_url:
-                upload_total += 1
-                upload_ok, upload_result, _ = handle_upload(
-                    request.upload_url,
-                    result,
-                    request.delete_cleaned,
-                )
-                if upload_ok:
-                    upload_success += 1
-                    uploaded_urls.append(upload_result)
-                else:
-                    upload_failed += 1
-        else:
-            failed += 1
+    images = list(iter_images(input_dir))
+    result = run_clean_loop(images, output_dir, request)
 
     return CleanResponse(
-        total=total,
-        success=success,
-        failed=failed,
+        total=result["total"],
+        success=result["success"],
+        failed=result["failed"],
         output_dir=str(output_dir),
-        upload_total=upload_total,
-        upload_success=upload_success,
-        upload_failed=upload_failed,
-        uploaded_urls=uploaded_urls,
+        upload_total=result["upload_total"],
+        upload_success=result["upload_success"],
+        upload_failed=result["upload_failed"],
+        uploaded_urls=result["uploaded_urls"],
+    )
+
+
+@app.post("/clean/start", response_model=CleanStartResponse)
+def clean_start(request: CleanRequest):
+    input_subdir = request.input_subdir or DEFAULT_INPUT
+    output_subdir = request.output_subdir or DEFAULT_OUTPUT
+    if request.upload_enabled and not request.upload_url:
+        raise HTTPException(status_code=400, detail="upload_url is required when upload is enabled")
+
+    input_dir = resolve_subdir(input_subdir)
+    output_dir = resolve_subdir(output_subdir)
+
+    if not input_dir.exists():
+        raise HTTPException(status_code=400, detail=f"Input directory not found: {input_dir}")
+
+    images = list(iter_images(input_dir))
+    job_id = uuid.uuid4().hex
+    init_job(job_id, len(images))
+
+    if not images:
+        update_job(job_id, done=True)
+        return CleanStartResponse(job_id=job_id)
+
+    thread = threading.Thread(
+        target=run_clean_job,
+        args=(job_id, images, output_dir, request),
+        daemon=True,
+    )
+    thread.start()
+    return CleanStartResponse(job_id=job_id)
+
+
+@app.get("/clean/status", response_model=CleanStatusResponse)
+def clean_status(job_id: str):
+    job = get_job(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="job not found")
+    return CleanStatusResponse(
+        job_id=job["job_id"],
+        total=job["total"],
+        success=job["success"],
+        failed=job["failed"],
+        upload_total=job["upload_total"],
+        upload_success=job["upload_success"],
+        upload_failed=job["upload_failed"],
+        done=job["done"],
+        error=job["error"],
     )
 
 

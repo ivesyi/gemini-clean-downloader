@@ -70,6 +70,25 @@
   "placeholder_upload_api_url": {"message": "https://cfbed.sanyue.de/upload?authCode=xxxx"},
   "label_delete_originals": {"message": "Delete originals after watermark removal"},
   "label_auto_clean": {"message": "Auto remove watermark after downloads finish"},
+  "status_watermark_progress": {
+    "message": "Removing watermark: $DONE$/$TOTAL$, failed $FAILED$. Upload: $UPLOAD_DONE$/$UPLOAD_TOTAL$, failed $UPLOAD_FAILED$",
+    "placeholders": {
+      "DONE": { "content": "$1" },
+      "TOTAL": { "content": "$2" },
+      "FAILED": { "content": "$3" },
+      "UPLOAD_DONE": { "content": "$4" },
+      "UPLOAD_TOTAL": { "content": "$5" },
+      "UPLOAD_FAILED": { "content": "$6" }
+    }
+  },
+  "status_watermark_progress_no_upload": {
+    "message": "Removing watermark: $DONE$/$TOTAL$, failed $FAILED$",
+    "placeholders": {
+      "DONE": { "content": "$1" },
+      "TOTAL": { "content": "$2" },
+      "FAILED": { "content": "$3" }
+    }
+  },
   "label_language": {"message": "UI language"},
   "btn_upload_test": {"message": "Test Upload"},
   "btn_save": {"message": "Save Settings"},
