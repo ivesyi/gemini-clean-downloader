@@ -2,3 +2,8 @@
 __pycache__/
 *.pyc
 .ace-tool/
+/docs/
+/tests/
+/notes.md
+/note.md
+/task_plan.md
