@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Gemini Clean Downloader Settings</title>
+    <title>Gemini Watermark Removal Downloader Settings</title>
     <link rel="stylesheet" href="options.css" />
   </head>
   <body>
     <main class="container">
-      <h1 data-i18n="settings_title">Gemini Clean Downloader</h1>
-      <p class="subtitle" data-i18n="settings_subtitle">Configure the local Docker cleaning service.</p>
+      <h1 data-i18n="settings_title">Gemini Watermark Removal Downloader</h1>
+      <p class="subtitle" data-i18n="settings_subtitle">Configure the local Docker watermark removal service.</p>
 
       <section class="card">
         <label>
@@ -37,7 +37,7 @@
         </label>
         <label class="checkbox">
           <input id="deleteCleanedAfterUpload" type="checkbox" />
-          <span data-i18n="label_delete_cleaned">Delete cleaned files after upload</span>
+          <span data-i18n="label_delete_cleaned">Delete watermark-removed files after upload</span>
         </label>
         <label>
           <span data-i18n="label_language">UI language</span>
@@ -49,11 +49,11 @@
         </label>
         <label class="checkbox">
           <input id="deleteOriginals" type="checkbox" />
-          <span data-i18n="label_delete_originals">Delete originals after cleaning</span>
+          <span data-i18n="label_delete_originals">Delete originals after watermark removal</span>
         </label>
         <label class="checkbox">
           <input id="autoClean" type="checkbox" />
-          <span data-i18n="label_auto_clean">Auto clean after downloads finish</span>
+          <span data-i18n="label_auto_clean">Auto remove watermark after downloads finish</span>
         </label>
       </section>
 

@@ -13,6 +13,9 @@
   let isExpanded = false;
   let cachedImages = [];
   let t = (key, vars) => key;
+  let pollTimer = null;
+  let currentJobId = null;
+  let currentUploadEnabled = false;
 
   const i18nReady = window.GCDI18n?.init
     ? window.GCDI18n.init().then(() => { t = window.GCDI18n.t; })
@@ -46,23 +49,89 @@
     statusEl.style.display = message ? 'block' : 'none';
   };
 
-  const requestCleanNow = () => {
-    updateStatus(t('status_request_clean'), 'info');
-    chrome.runtime.sendMessage({ action: 'cleanNow' }, (resp) => {
-      if (resp && resp.ok) {
-        const data = resp.data || {};
-        const uploadTotal = data.upload_total || 0;
-        if (uploadTotal > 0) {
+  const stopPolling = () => {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+  };
+
+  const renderProgress = (status) => {
+    const success = status.success || 0;
+    const failed = status.failed || 0;
+    const total = status.total || 0;
+    const done = success + failed;
+    if (currentUploadEnabled) {
+      const uploadSuccess = status.upload_success || 0;
+      const uploadFailed = status.upload_failed || 0;
+      const uploadDone = uploadSuccess + uploadFailed;
+      updateStatus(t('status_watermark_progress', {
+        done,
+        total,
+        failed,
+        upload_done: uploadDone,
+        upload_total: total,
+        upload_failed: uploadFailed
+      }), 'info');
+    } else {
+      updateStatus(t('status_watermark_progress_no_upload', {
+        done,
+        total,
+        failed
+      }), 'info');
+    }
+  };
+
+  const startPolling = (jobId, uploadEnabled) => {
+    if (!jobId) return;
+    currentJobId = jobId;
+    currentUploadEnabled = !!uploadEnabled;
+    stopPolling();
+
+    const pollOnce = () => {
+      chrome.runtime.sendMessage({ action: 'getCleanStatus', jobId }, (resp) => {
+        if (jobId !== currentJobId) return;
+        if (!resp || !resp.ok) {
+          updateStatus(t('status_clean_failed', { error: resp?.error || 'unknown error' }), 'error');
+          stopPolling();
+          return;
+        }
+        const status = resp.status || {};
+        if (status.error) {
+          updateStatus(t('status_clean_failed', { error: status.error }), 'error');
+          stopPolling();
+          return;
+        }
+        if (!status.done) {
+          renderProgress(status);
+          return;
+        }
+
+        const uploadTotal = status.upload_total || 0;
+        if (uploadTotal > 0 || currentUploadEnabled) {
           updateStatus(t('status_clean_upload_result', {
-            success: data.success || 0,
-            failed: data.failed || 0,
-            upload_success: data.upload_success || 0,
-            upload_failed: data.upload_failed || 0
+            success: status.success || 0,
+            failed: status.failed || 0,
+            upload_success: status.upload_success || 0,
+            upload_failed: status.upload_failed || 0
           }), 'success');
         } else {
-          updateStatus(t('status_clean_result', { success: data.success || 0, failed: data.failed || 0 }), 'success');
+          updateStatus(t('status_clean_result', { success: status.success || 0, failed: status.failed || 0 }), 'success');
         }
+        stopPolling();
         setTimeout(() => updateStatus(''), 4000);
+      });
+    };
+
+    pollOnce();
+    pollTimer = setInterval(pollOnce, 1000);
+  };
+
+  const requestCleanNow = () => {
+    updateStatus(t('status_request_clean'), 'info');
+    chrome.runtime.sendMessage({ action: 'startClean' }, (resp) => {
+      if (resp && resp.ok) {
+        startPolling(resp.jobId, resp.uploadEnabled);
       } else {
         updateStatus(t('status_clean_failed', { error: resp?.error || 'unknown error' }), 'error');
       }
@@ -198,13 +267,13 @@
           </svg>
           <span data-i18n="btn_download_all">Download All Originals</span>
         </button>
-        <button class="gcd-panel-btn gcd-btn-clean" data-i18n-title="btn_clean_now_title" title="Run local cleaner now">
+        <button class="gcd-panel-btn gcd-btn-clean" data-i18n-title="btn_clean_now_title" title="Run local watermark removal now">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4 4H20V9C20 12.3137 17.3137 15 14 15H10C6.68629 15 4 12.3137 4 9V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M8 19H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M12 15V19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span data-i18n="btn_clean_now">Clean Now</span>
+          <span data-i18n="btn_clean_now">Remove Watermark</span>
         </button>
         <button class="gcd-panel-btn gcd-btn-settings" data-i18n-title="btn_settings_title" title="Open settings">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -336,6 +405,12 @@
 
     observer.observe(document.body, { childList: true, subtree: true });
   };
+
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message?.action === 'cleanJobStarted' && message.jobId) {
+      startPolling(message.jobId, message.uploadEnabled);
+    }
+  });
 
   init();
 })();

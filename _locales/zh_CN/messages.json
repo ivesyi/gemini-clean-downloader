@@ -6,8 +6,8 @@
   },
   "btn_download_all": {"message": "批量下载原图"},
   "btn_download_all_title": {"message": "下载当前对话所有原图"},
-  "btn_clean_now": {"message": "立即清理"},
-  "btn_clean_now_title": {"message": "手动触发本地清理"},
+  "btn_clean_now": {"message": "立即去水印"},
+  "btn_clean_now_title": {"message": "手动触发本地去水印"},
   "btn_settings": {"message": "设置"},
   "btn_settings_title": {"message": "打开设置"},
 
@@ -37,16 +37,16 @@
       "FAILED": { "content": "$2" }
     }
   },
-  "status_request_clean": {"message": "正在请求清理..."},
+  "status_request_clean": {"message": "正在请求去水印..."},
   "status_clean_result": {
-    "message": "清理完成：成功 $SUCCESS$ 张，失败 $FAILED$ 张",
+    "message": "去水印完成：成功 $SUCCESS$ 张，失败 $FAILED$ 张",
     "placeholders": {
       "SUCCESS": { "content": "$1" },
       "FAILED": { "content": "$2" }
     }
   },
   "status_clean_upload_result": {
-    "message": "清理完成：成功 $SUCCESS$ 张，失败 $FAILED$ 张。上传成功 $UPLOAD_SUCCESS$ 张，失败 $UPLOAD_FAILED$ 张",
+    "message": "去水印完成：成功 $SUCCESS$ 张，失败 $FAILED$ 张。上传成功 $UPLOAD_SUCCESS$ 张，失败 $UPLOAD_FAILED$ 张",
     "placeholders": {
       "SUCCESS": { "content": "$1" },
       "FAILED": { "content": "$2" },
@@ -55,21 +55,40 @@
     }
   },
   "status_clean_failed": {
-    "message": "清理失败：$ERROR$",
+    "message": "去水印失败：$ERROR$",
     "placeholders": { "ERROR": { "content": "$1" } }
   },
 
-  "settings_title": {"message": "Gemini 清理下载器"},
-  "settings_subtitle": {"message": "配置本地 Docker 清理服务"},
+  "settings_title": {"message": "Gemini 去水印下载器"},
+  "settings_subtitle": {"message": "配置本地 Docker 去水印服务"},
   "label_service_url": {"message": "服务地址"},
   "label_input_subdir": {"message": "输入目录（挂载根目录下的子目录）"},
   "label_output_subdir": {"message": "结果目录（挂载根目录下的子目录）"},
   "label_upload_enabled": {"message": "启用 ImgBed 上传"},
   "label_upload_api_url": {"message": "ImgBed 上传 API 地址"},
-  "label_delete_cleaned": {"message": "上传后删除清理文件"},
+  "label_delete_cleaned": {"message": "上传后删除去水印文件"},
   "placeholder_upload_api_url": {"message": "https://cfbed.sanyue.de/upload?authCode=xxxx"},
-  "label_delete_originals": {"message": "清理后删除原图"},
-  "label_auto_clean": {"message": "下载完成后自动清理"},
+  "label_delete_originals": {"message": "去水印后删除原图"},
+  "label_auto_clean": {"message": "下载完成后自动去水印"},
+  "status_watermark_progress": {
+    "message": "去水印：$DONE$/$TOTAL$，失败 $FAILED$。上传：$UPLOAD_DONE$/$UPLOAD_TOTAL$，失败 $UPLOAD_FAILED$",
+    "placeholders": {
+      "DONE": { "content": "$1" },
+      "TOTAL": { "content": "$2" },
+      "FAILED": { "content": "$3" },
+      "UPLOAD_DONE": { "content": "$4" },
+      "UPLOAD_TOTAL": { "content": "$5" },
+      "UPLOAD_FAILED": { "content": "$6" }
+    }
+  },
+  "status_watermark_progress_no_upload": {
+    "message": "去水印：$DONE$/$TOTAL$，失败 $FAILED$",
+    "placeholders": {
+      "DONE": { "content": "$1" },
+      "TOTAL": { "content": "$2" },
+      "FAILED": { "content": "$3" }
+    }
+  },
   "label_language": {"message": "界面语言"},
   "btn_upload_test": {"message": "测试上传"},
   "btn_save": {"message": "保存设置"},

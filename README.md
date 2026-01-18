@@ -1,23 +1,24 @@
-# Gemini Clean Downloader
+# Gemini Watermark Removal Downloader
 
 [English] | [简体中文](README.zh-CN.md)
 
-One-click download of Gemini original images with **local watermark cleaning** powered by a Docker service.
+One-click download of Gemini original images with **local watermark removal** powered by a Docker service.
 
 ## Features
 - Single download: intercepts Gemini's native Download button to save **originals**.
 - Batch download: download all images in the current conversation.
-- Auto clean after downloads finish (or manual "Clean Now").
-- Optional delete originals after cleaning.
-- Optional upload cleaned images to CloudFlare ImgBed.
-- Optional delete cleaned files after upload.
+- Auto remove watermark after downloads finish (or manual "Remove Watermark").
+- Optional delete originals after watermark removal.
+- Optional upload watermark‑removed images to CloudFlare ImgBed.
+- Optional delete watermark‑removed files after upload.
+- Watermark removal and upload progress shown in the panel (updates every 1s).
 - Configurable Result folder (subdir under mounted base).
 - UI language: Auto / English / 简体中文.
 
 ## How It Works
 1. The **Chrome extension** downloads originals into an input folder.
-2. The **local Docker service** removes visible watermarks and writes cleaned images to the output folder.
-3. If enabled, originals are deleted after cleaning.
+2. The **local Docker service** removes visible watermarks and writes watermark‑removed images to the output folder.
+3. If enabled, originals are deleted after watermark removal.
 
 ## Open‑source References
 - [**gemini-watermark-remover**](https://github.com/journey-ad/gemini-watermark-remover) — watermark removal approach (reverse alpha blending).
@@ -42,19 +43,19 @@ One-click download of Gemini original images with **local watermark cleaning** p
 ## Usage
 - **Single image**: click Gemini's built‑in Download button.
 - **Batch**: panel → **Download All Originals**.
-- If **Auto clean** is ON, cleaning runs automatically.
-- If OFF, click **Clean Now**.
+- If **Auto remove watermark** is ON, removal runs automatically.
+- If OFF, click **Remove Watermark**.
 
 ## Settings
 Available in the extension settings:
 - **Service URL** (default `http://127.0.0.1:17811`)
 - **Input folder** (default `Gemini-Originals`)
 - **Result folder** (default `Gemini-Clean`)
-- **Delete originals after cleaning**
-- **Auto clean after downloads finish**
+- **Delete originals after watermark removal**
+- **Auto remove watermark after downloads finish**
 - **Enable ImgBed upload**
 - **Upload API URL (CloudFlare ImgBed)**, e.g. `https://cfbed.sanyue.de/upload?authCode=xxxx`
-- **Delete cleaned files after upload**
+- **Delete watermark‑removed files after upload**
 - **UI language**
 - **Test Upload** button next to ImgBed API URL uploads a built‑in test image and shows the returned URL
 
