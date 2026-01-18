@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Gemini Clean Downloader",
+  "name": "Gemini Watermark Removal Downloader",
   "version": "0.1.0",
-  "description": "Download Gemini originals and trigger local Docker cleaner.",
+  "description": "Download Gemini originals and trigger local Docker watermark removal.",
   "permissions": [
     "activeTab",
     "downloads",

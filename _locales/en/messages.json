@@ -6,8 +6,8 @@
   },
   "btn_download_all": {"message": "Download All Originals"},
   "btn_download_all_title": {"message": "Download all original images"},
-  "btn_clean_now": {"message": "Clean Now"},
-  "btn_clean_now_title": {"message": "Run local cleaner now"},
+  "btn_clean_now": {"message": "Remove Watermark"},
+  "btn_clean_now_title": {"message": "Run local watermark removal now"},
   "btn_settings": {"message": "Settings"},
   "btn_settings_title": {"message": "Open settings"},
 
@@ -37,16 +37,16 @@
       "FAILED": { "content": "$2" }
     }
   },
-  "status_request_clean": {"message": "Requesting clean..."},
+  "status_request_clean": {"message": "Requesting watermark removal..."},
   "status_clean_result": {
-    "message": "Cleaned: $SUCCESS$ ok, $FAILED$ failed",
+    "message": "Watermark removed: $SUCCESS$ ok, $FAILED$ failed",
     "placeholders": {
       "SUCCESS": { "content": "$1" },
       "FAILED": { "content": "$2" }
     }
   },
   "status_clean_upload_result": {
-    "message": "Cleaned: $SUCCESS$ ok, $FAILED$ failed. Uploaded: $UPLOAD_SUCCESS$ ok, $UPLOAD_FAILED$ failed",
+    "message": "Watermark removed: $SUCCESS$ ok, $FAILED$ failed. Uploaded: $UPLOAD_SUCCESS$ ok, $UPLOAD_FAILED$ failed",
     "placeholders": {
       "SUCCESS": { "content": "$1" },
       "FAILED": { "content": "$2" },
@@ -55,21 +55,21 @@
     }
   },
   "status_clean_failed": {
-    "message": "Clean failed: $ERROR$",
+    "message": "Watermark removal failed: $ERROR$",
     "placeholders": { "ERROR": { "content": "$1" } }
   },
 
-  "settings_title": {"message": "Gemini Clean Downloader"},
-  "settings_subtitle": {"message": "Configure the local Docker cleaning service."},
+  "settings_title": {"message": "Gemini Watermark Removal Downloader"},
+  "settings_subtitle": {"message": "Configure the local Docker watermark removal service."},
   "label_service_url": {"message": "Service URL"},
   "label_input_subdir": {"message": "Input folder (subdir under mounted base)"},
   "label_output_subdir": {"message": "Result folder (subdir under mounted base)"},
   "label_upload_enabled": {"message": "Enable ImgBed upload"},
   "label_upload_api_url": {"message": "ImgBed Upload API URL"},
-  "label_delete_cleaned": {"message": "Delete cleaned files after upload"},
+  "label_delete_cleaned": {"message": "Delete watermark-removed files after upload"},
   "placeholder_upload_api_url": {"message": "https://cfbed.sanyue.de/upload?authCode=xxxx"},
-  "label_delete_originals": {"message": "Delete originals after cleaning"},
-  "label_auto_clean": {"message": "Auto clean after downloads finish"},
+  "label_delete_originals": {"message": "Delete originals after watermark removal"},
+  "label_auto_clean": {"message": "Auto remove watermark after downloads finish"},
   "label_language": {"message": "UI language"},
   "btn_upload_test": {"message": "Test Upload"},
   "btn_save": {"message": "Save Settings"},

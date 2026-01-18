@@ -198,13 +198,13 @@
           </svg>
           <span data-i18n="btn_download_all">Download All Originals</span>
         </button>
-        <button class="gcd-panel-btn gcd-btn-clean" data-i18n-title="btn_clean_now_title" title="Run local cleaner now">
+        <button class="gcd-panel-btn gcd-btn-clean" data-i18n-title="btn_clean_now_title" title="Run local watermark removal now">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4 4H20V9C20 12.3137 17.3137 15 14 15H10C6.68629 15 4 12.3137 4 9V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M8 19H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M12 15V19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span data-i18n="btn_clean_now">Clean Now</span>
+          <span data-i18n="btn_clean_now">Remove Watermark</span>
         </button>
         <button class="gcd-panel-btn gcd-btn-settings" data-i18n-title="btn_settings_title" title="Open settings">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
