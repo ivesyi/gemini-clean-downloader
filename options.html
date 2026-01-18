@@ -16,25 +16,13 @@
           <span data-i18n="label_service_url">Service URL</span>
           <input id="serviceUrl" type="text" data-i18n-placeholder="label_service_url" placeholder="http://127.0.0.1:17811" />
         </label>
-        <div class="path-preview">
-          <div class="path-preview-label" data-i18n="label_download_root">Chrome default download directory</div>
-          <code id="downloadRoot">Chrome default download directory</code>
-        </div>
         <label>
           <span data-i18n="label_input_subdir">Input folder (subdir under mounted base)</span>
           <input id="inputSubdir" type="text" data-i18n-placeholder="label_input_subdir" placeholder="Gemini-Originals" />
-          <div class="path-preview">
-            <span class="path-preview-label" data-i18n="label_input_preview">Input path preview</span>
-            <code id="inputPathPreview"></code>
-          </div>
         </label>
         <label>
           <span data-i18n="label_output_subdir">Result folder (subdir under mounted base)</span>
           <input id="outputSubdir" type="text" data-i18n-placeholder="label_output_subdir" placeholder="Gemini-Clean" />
-          <div class="path-preview">
-            <span class="path-preview-label" data-i18n="label_output_preview">Output path preview</span>
-            <code id="outputPathPreview"></code>
-          </div>
         </label>
         <label class="checkbox">
           <input id="uploadEnabled" type="checkbox" />
@@ -80,7 +68,6 @@
       </section>
     </main>
 
-    <script src="path_utils.js"></script>
     <script src="i18n.js"></script>
     <script src="options.js"></script>
   </body>

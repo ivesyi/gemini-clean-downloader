@@ -140,6 +140,14 @@ def iter_images(input_dir: Path):
             yield entry
 
 
+def ensure_input_dir(input_dir: Path):
+    if input_dir.exists():
+        if not input_dir.is_dir():
+            raise HTTPException(status_code=400, detail=f"Input path is not a directory: {input_dir}")
+        return
+    input_dir.mkdir(parents=True, exist_ok=True)
+
+
 def process_file(path: Path, output_dir: Path, delete_originals: bool):
     try:
         img = Image.open(path).convert("RGBA")
@@ -295,8 +303,7 @@ def clean_images(request: CleanRequest):
     input_dir = resolve_subdir(input_subdir)
     output_dir = resolve_subdir(output_subdir)
 
-    if not input_dir.exists():
-        raise HTTPException(status_code=400, detail=f"Input directory not found: {input_dir}")
+    ensure_input_dir(input_dir)
 
     images = list(iter_images(input_dir))
     result = run_clean_loop(images, output_dir, request)
@@ -323,8 +330,7 @@ def clean_start(request: CleanRequest):
     input_dir = resolve_subdir(input_subdir)
     output_dir = resolve_subdir(output_subdir)
 
-    if not input_dir.exists():
-        raise HTTPException(status_code=400, detail=f"Input directory not found: {input_dir}")
+    ensure_input_dir(input_dir)
 
     images = list(iter_images(input_dir))
     job_id = uuid.uuid4().hex
