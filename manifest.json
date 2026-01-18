@@ -18,7 +18,7 @@
   "content_scripts": [
     {
       "matches": ["https://gemini.google.com/*"],
-      "js": ["i18n.js", "content.js"],
+      "js": ["path_utils.js", "i18n.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
     }

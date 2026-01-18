@@ -10,6 +10,11 @@
     maxBatchCount: 500
   };
 
+  const DEFAULT_INPUT_SUBDIR = 'Gemini-Originals';
+  const resolveDownloadSubdir = window.GCDPathUtils?.resolveDownloadSubdir
+    ? window.GCDPathUtils.resolveDownloadSubdir
+    : (value, fallback) => fallback;
+
   let isExpanded = false;
   let cachedImages = [];
   let t = (key, vars) => key;
@@ -47,6 +52,21 @@
     statusEl.textContent = message;
     statusEl.className = `gcd-panel-status gcd-status-${type}`;
     statusEl.style.display = message ? 'block' : 'none';
+  };
+
+  const fetchSettings = () => new Promise((resolve) => {
+    chrome.runtime.sendMessage({ action: 'getSettings' }, (resp) => {
+      if (resp && resp.ok) {
+        resolve(resp.settings || {});
+      } else {
+        resolve({});
+      }
+    });
+  });
+
+  const getInputSubdir = async () => {
+    const settings = await fetchSettings();
+    return resolveDownloadSubdir(settings?.inputSubdir, DEFAULT_INPUT_SUBDIR);
   };
 
   const stopPolling = () => {
@@ -146,11 +166,12 @@
     }
   };
 
-  const downloadOriginal = (url, filename) => new Promise((resolve, reject) => {
+  const downloadOriginal = (url, filename, inputSubdir) => new Promise((resolve, reject) => {
+    const subdir = resolveDownloadSubdir(inputSubdir, DEFAULT_INPUT_SUBDIR);
     chrome.runtime.sendMessage({
       action: 'downloadImage',
       url,
-      filename: `Gemini-Originals/${filename}`
+      filename: `${subdir}/${filename}`
     }, (resp) => {
       if (resp && resp.ok) {
         resolve(resp);
@@ -329,7 +350,8 @@
       updateStatus(t('status_downloading_single'), 'info');
 
       try {
-        await downloadOriginal(normalizeToS0(img.src), filename);
+        const inputSubdir = await getInputSubdir();
+        await downloadOriginal(normalizeToS0(img.src), filename, inputSubdir);
         updateStatus(t('status_downloaded_single'), 'success');
         setTimeout(() => updateStatus(''), 2500);
       } catch (error) {
@@ -348,6 +370,7 @@
     }
 
     const total = Math.min(images.length, CONFIG.maxBatchCount);
+    const inputSubdir = await getInputSubdir();
     updateStatus(t('status_downloading_batch', { total }), 'info');
 
     let successCount = 0;
@@ -357,7 +380,7 @@
       try {
         updateStatus(t('status_downloading_progress', { index: i + 1, total }), 'info');
         const filename = buildFilename(i, total);
-        await downloadOriginal(normalizeToS0(images[i].src), filename);
+        await downloadOriginal(normalizeToS0(images[i].src), filename, inputSubdir);
         successCount++;
         await sleep(CONFIG.downloadDelayMs);
       } catch (error) {
