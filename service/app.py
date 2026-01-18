@@ -223,23 +223,13 @@ def run_clean_loop(images, output_dir: Path, request: CleanRequest, job_id: Opti
     upload_success = 0
     upload_failed = 0
     uploaded_urls: list[str] = []
+    cleaned_paths: list[str] = []
 
     for image_path in images:
         ok, result = process_file(image_path, output_dir, request.delete_originals)
         if ok:
             success += 1
-            if request.upload_enabled and request.upload_url:
-                upload_total += 1
-                upload_ok, upload_result, _ = handle_upload(
-                    request.upload_url,
-                    result,
-                    request.delete_cleaned,
-                )
-                if upload_ok:
-                    upload_success += 1
-                    uploaded_urls.append(upload_result)
-                else:
-                    upload_failed += 1
+            cleaned_paths.append(result)
         else:
             failed += 1
 
@@ -252,6 +242,31 @@ def run_clean_loop(images, output_dir: Path, request: CleanRequest, job_id: Opti
                 upload_success=upload_success,
                 upload_failed=upload_failed,
             )
+
+    if request.upload_enabled and request.upload_url and cleaned_paths:
+        upload_total = len(cleaned_paths)
+        if job_id:
+            update_job(job_id, upload_total=upload_total)
+
+        for cleaned_path in cleaned_paths:
+            upload_ok, upload_result, _ = handle_upload(
+                request.upload_url,
+                cleaned_path,
+                request.delete_cleaned,
+            )
+            if upload_ok:
+                upload_success += 1
+                uploaded_urls.append(upload_result)
+            else:
+                upload_failed += 1
+
+            if job_id:
+                update_job(
+                    job_id,
+                    upload_total=upload_total,
+                    upload_success=upload_success,
+                    upload_failed=upload_failed,
+                )
 
     return {
         "total": total,

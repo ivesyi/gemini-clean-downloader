@@ -9,7 +9,7 @@ One-click download of Gemini original images with **local watermark removal** po
 - Batch download: download all images in the current conversation.
 - Auto remove watermark after downloads finish (or manual "Remove Watermark").
 - Optional delete originals after watermark removal.
-- Optional upload watermark‑removed images to CloudFlare ImgBed.
+- Optional upload watermark‑removed images to CloudFlare ImgBed (MarSeventh/CloudFlare-ImgBed).
 - Optional delete watermark‑removed files after upload.
 - Watermark removal and upload progress shown in the panel (updates every 1s).
 - Configurable Result folder (subdir under mounted base).
@@ -55,7 +55,7 @@ Available in the extension settings:
 - **Delete originals after watermark removal**
 - **Auto remove watermark after downloads finish**
 - **Enable ImgBed upload**
-- **Upload API URL (CloudFlare ImgBed)**, e.g. `https://cfbed.sanyue.de/upload?authCode=xxxx`
+- **Upload API URL (CloudFlare ImgBed)**, e.g. `https://cfbed.sanyue.de/upload?authCode=xxxx` (from MarSeventh/CloudFlare-ImgBed)
 - **Delete watermark‑removed files after upload**
 - **UI language**
 - **Test Upload** button next to ImgBed API URL uploads a built‑in test image and shows the returned URL
@@ -92,4 +92,4 @@ ${HOME}/Downloads/
 
 ## Limitations
 This removes **visible watermarks only**. It does **not** remove invisible watermarks (e.g. SynthID).
-Upload currently supports **CloudFlare ImgBed only**.
+Upload currently supports **CloudFlare ImgBed only** (https://github.com/MarSeventh/CloudFlare-ImgBed).

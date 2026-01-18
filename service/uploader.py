@@ -1,9 +1,12 @@
 from urllib.parse import urlparse
+import logging
 import os
+import time
 import requests
 
 DEFAULT_TIMEOUT = 60
 DEFAULT_RETRIES = 1
+LOGGER = logging.getLogger("uploader")
 
 
 def build_full_url(api_url: str, src: str) -> str:
@@ -28,20 +31,32 @@ def parse_upload_response(data):
 
 def upload_file(api_url: str, file_path: str, timeout: int = DEFAULT_TIMEOUT, retries: int = DEFAULT_RETRIES):
     last_error = None
+    try:
+        file_size = os.path.getsize(file_path)
+    except Exception:
+        file_size = None
+    filename = os.path.basename(file_path)
     for attempt in range(retries + 1):
         try:
+            start = time.monotonic()
             with open(file_path, "rb") as f:
                 resp = requests.post(api_url, files={"file": f}, timeout=timeout)
+            duration_ms = int((time.monotonic() - start) * 1000)
+            LOGGER.info("upload attempt=%s ok duration_ms=%s size=%s file=%s", attempt + 1, duration_ms, file_size, filename)
             resp.raise_for_status()
             src = parse_upload_response(resp.json())
             if not src:
                 return False, "missing src"
             return True, build_full_url(api_url, src)
         except requests.RequestException as exc:
+            duration_ms = int((time.monotonic() - start) * 1000) if "start" in locals() else None
+            LOGGER.info("upload attempt=%s failed duration_ms=%s size=%s file=%s error=%s", attempt + 1, duration_ms, file_size, filename, exc)
             last_error = exc
             if attempt >= retries:
                 return False, str(exc)
         except Exception as exc:
+            duration_ms = int((time.monotonic() - start) * 1000) if "start" in locals() else None
+            LOGGER.info("upload attempt=%s failed duration_ms=%s size=%s file=%s error=%s", attempt + 1, duration_ms, file_size, filename, exc)
             last_error = exc
             if attempt >= retries:
                 return False, str(exc)

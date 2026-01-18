@@ -14,13 +14,16 @@
   const resolveDownloadSubdir = window.GCDPathUtils?.resolveDownloadSubdir
     ? window.GCDPathUtils.resolveDownloadSubdir
     : (value, fallback) => fallback;
+  const getStageFromStatus = window.GCDStatusUtils?.getStageFromStatus
+    ? window.GCDStatusUtils.getStageFromStatus
+    : (status) => ((status?.upload_total || 0) > 0 ? 'upload' : 'clean');
 
   let isExpanded = false;
   let cachedImages = [];
   let t = (key, vars) => key;
   let pollTimer = null;
   let currentJobId = null;
-  let currentUploadEnabled = false;
+  let currentStage = null;
 
   const i18nReady = window.GCDI18n?.init
     ? window.GCDI18n.init().then(() => { t = window.GCDI18n.t; })
@@ -54,6 +57,11 @@
     statusEl.style.display = message ? 'block' : 'none';
   };
 
+  const setStageStatus = (stage, message, type = 'info') => {
+    currentStage = stage;
+    updateStatus(message, type);
+  };
+
   const fetchSettings = () => new Promise((resolve) => {
     chrome.runtime.sendMessage({ action: 'getSettings' }, (resp) => {
       if (resp && resp.ok) {
@@ -81,20 +89,19 @@
     const failed = status.failed || 0;
     const total = status.total || 0;
     const done = success + failed;
-    if (currentUploadEnabled) {
+    const stage = getStageFromStatus(status);
+    if (stage === 'upload') {
       const uploadSuccess = status.upload_success || 0;
       const uploadFailed = status.upload_failed || 0;
       const uploadDone = uploadSuccess + uploadFailed;
-      updateStatus(t('status_watermark_progress', {
-        done,
-        total,
-        failed,
-        upload_done: uploadDone,
-        upload_total: total,
-        upload_failed: uploadFailed
+      const uploadTotal = status.upload_total || 0;
+      setStageStatus('upload', t('status_upload_progress', {
+        done: uploadDone,
+        total: uploadTotal,
+        failed: uploadFailed
       }), 'info');
     } else {
-      updateStatus(t('status_watermark_progress_no_upload', {
+      setStageStatus('clean', t('status_clean_progress', {
         done,
         total,
         failed
@@ -105,20 +112,19 @@
   const startPolling = (jobId, uploadEnabled) => {
     if (!jobId) return;
     currentJobId = jobId;
-    currentUploadEnabled = !!uploadEnabled;
     stopPolling();
 
     const pollOnce = () => {
       chrome.runtime.sendMessage({ action: 'getCleanStatus', jobId }, (resp) => {
         if (jobId !== currentJobId) return;
         if (!resp || !resp.ok) {
-          updateStatus(t('status_clean_failed', { error: resp?.error || 'unknown error' }), 'error');
+          setStageStatus('clean', t('status_clean_failed', { error: resp?.error || 'unknown error' }), 'error');
           stopPolling();
           return;
         }
         const status = resp.status || {};
         if (status.error) {
-          updateStatus(t('status_clean_failed', { error: status.error }), 'error');
+          setStageStatus('clean', t('status_clean_failed', { error: status.error }), 'error');
           stopPolling();
           return;
         }
@@ -128,18 +134,15 @@
         }
 
         const uploadTotal = status.upload_total || 0;
-        if (uploadTotal > 0 || currentUploadEnabled) {
-          updateStatus(t('status_clean_upload_result', {
-            success: status.success || 0,
-            failed: status.failed || 0,
-            upload_success: status.upload_success || 0,
-            upload_failed: status.upload_failed || 0
+        if (uploadTotal > 0) {
+          setStageStatus('upload', t('status_upload_result', {
+            success: status.upload_success || 0,
+            failed: status.upload_failed || 0
           }), 'success');
         } else {
-          updateStatus(t('status_clean_result', { success: status.success || 0, failed: status.failed || 0 }), 'success');
+          setStageStatus('clean', t('status_clean_result', { success: status.success || 0, failed: status.failed || 0 }), 'success');
         }
         stopPolling();
-        setTimeout(() => updateStatus(''), 4000);
       });
     };
 
@@ -148,12 +151,12 @@
   };
 
   const requestCleanNow = () => {
-    updateStatus(t('status_request_clean'), 'info');
+    setStageStatus('clean', t('status_request_clean'), 'info');
     chrome.runtime.sendMessage({ action: 'startClean' }, (resp) => {
       if (resp && resp.ok) {
         startPolling(resp.jobId, resp.uploadEnabled);
       } else {
-        updateStatus(t('status_clean_failed', { error: resp?.error || 'unknown error' }), 'error');
+        setStageStatus('clean', t('status_clean_failed', { error: resp?.error || 'unknown error' }), 'error');
       }
     });
   };
@@ -347,16 +350,15 @@
       event.stopImmediatePropagation();
 
       const filename = buildFilename(0, 1);
-      updateStatus(t('status_downloading_single'), 'info');
+      setStageStatus('download', t('status_downloading_single'), 'info');
 
       try {
         const inputSubdir = await getInputSubdir();
         await downloadOriginal(normalizeToS0(img.src), filename, inputSubdir);
-        updateStatus(t('status_downloaded_single'), 'success');
-        setTimeout(() => updateStatus(''), 2500);
+        setStageStatus('download', t('status_downloaded_single'), 'success');
       } catch (error) {
         console.warn('[Gemini Originals Downloader] Download failed:', error);
-        updateStatus(t('status_download_failed'), 'error');
+        setStageStatus('download', t('status_download_failed'), 'error');
       }
     }, true);
   };
@@ -365,20 +367,20 @@
   const downloadAllOriginals = async () => {
     const images = findGeneratedImages();
     if (images.length === 0) {
-      updateStatus(t('status_no_images'), 'error');
+      setStageStatus('download', t('status_no_images'), 'error');
       return;
     }
 
     const total = Math.min(images.length, CONFIG.maxBatchCount);
     const inputSubdir = await getInputSubdir();
-    updateStatus(t('status_downloading_batch', { total }), 'info');
+    setStageStatus('download', t('status_downloading_batch', { total }), 'info');
 
     let successCount = 0;
     let failCount = 0;
 
     for (let i = 0; i < total; i++) {
       try {
-        updateStatus(t('status_downloading_progress', { index: i + 1, total }), 'info');
+        setStageStatus('download', t('status_downloading_progress', { index: i + 1, total }), 'info');
         const filename = buildFilename(i, total);
         await downloadOriginal(normalizeToS0(images[i].src), filename, inputSubdir);
         successCount++;
@@ -390,12 +392,10 @@
     }
 
     if (failCount === 0) {
-      updateStatus(t('status_downloaded_batch', { success: successCount }), 'success');
+      setStageStatus('download', t('status_downloaded_batch', { success: successCount }), 'success');
     } else {
-      updateStatus(t('status_downloaded_batch_partial', { success: successCount, failed: failCount }), 'warning');
+      setStageStatus('download', t('status_downloaded_batch_partial', { success: successCount, failed: failCount }), 'warning');
     }
-
-    setTimeout(() => updateStatus(''), 5000);
   };
 
   // ---------- Init ----------
@@ -431,6 +431,7 @@
 
   chrome.runtime.onMessage.addListener((message) => {
     if (message?.action === 'cleanJobStarted' && message.jobId) {
+      setStageStatus('clean', t('status_request_clean'), 'info');
       startPolling(message.jobId, message.uploadEnabled);
     }
   });

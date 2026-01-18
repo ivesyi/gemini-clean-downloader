@@ -38,8 +38,31 @@
     }
   },
   "status_request_clean": {"message": "Requesting watermark removal..."},
+  "status_clean_progress": {
+    "message": "Removing watermark: $DONE$/$TOTAL$, failed $FAILED$",
+    "placeholders": {
+      "DONE": { "content": "$1" },
+      "TOTAL": { "content": "$2" },
+      "FAILED": { "content": "$3" }
+    }
+  },
   "status_clean_result": {
     "message": "Watermark removed: $SUCCESS$ ok, $FAILED$ failed",
+    "placeholders": {
+      "SUCCESS": { "content": "$1" },
+      "FAILED": { "content": "$2" }
+    }
+  },
+  "status_upload_progress": {
+    "message": "Uploading: $DONE$/$TOTAL$, failed $FAILED$",
+    "placeholders": {
+      "DONE": { "content": "$1" },
+      "TOTAL": { "content": "$2" },
+      "FAILED": { "content": "$3" }
+    }
+  },
+  "status_upload_result": {
+    "message": "Upload finished: $SUCCESS$ ok, $FAILED$ failed",
     "placeholders": {
       "SUCCESS": { "content": "$1" },
       "FAILED": { "content": "$2" }

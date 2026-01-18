@@ -38,8 +38,31 @@
     }
   },
   "status_request_clean": {"message": "正在请求去水印..."},
+  "status_clean_progress": {
+    "message": "去水印：$DONE$/$TOTAL$，失败 $FAILED$",
+    "placeholders": {
+      "DONE": { "content": "$1" },
+      "TOTAL": { "content": "$2" },
+      "FAILED": { "content": "$3" }
+    }
+  },
   "status_clean_result": {
     "message": "去水印完成：成功 $SUCCESS$ 张，失败 $FAILED$ 张",
+    "placeholders": {
+      "SUCCESS": { "content": "$1" },
+      "FAILED": { "content": "$2" }
+    }
+  },
+  "status_upload_progress": {
+    "message": "上传：$DONE$/$TOTAL$，失败 $FAILED$",
+    "placeholders": {
+      "DONE": { "content": "$1" },
+      "TOTAL": { "content": "$2" },
+      "FAILED": { "content": "$3" }
+    }
+  },
+  "status_upload_result": {
+    "message": "上传完成：成功 $SUCCESS$ 张，失败 $FAILED$ 张",
     "placeholders": {
       "SUCCESS": { "content": "$1" },
       "FAILED": { "content": "$2" }

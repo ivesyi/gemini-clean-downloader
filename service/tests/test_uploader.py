@@ -59,6 +59,16 @@ class UploaderTests(unittest.TestCase):
         self.assertEqual(url, "https://cfbed.sanyue.de/file/abc.jpg")
 
     @patch("uploader.requests.post")
+    def test_upload_file_logs_duration(self, post):
+        post.return_value = DummyResp([{ "src": "/file/abc.jpg" }])
+        with tempfile.NamedTemporaryFile(suffix=".png") as f:
+            with self.assertLogs("uploader", level="INFO") as logs:
+                ok, url = upload_file("https://cfbed.sanyue.de/upload?authCode=abc", f.name)
+        self.assertTrue(ok)
+        self.assertEqual(url, "https://cfbed.sanyue.de/file/abc.jpg")
+        self.assertTrue(any("duration_ms=" in line for line in logs.output))
+
+    @patch("uploader.requests.post")
     def test_upload_file_retries_on_timeout(self, post):
         post.side_effect = [ReadTimeout("boom"), DummyResp([{ "src": "/file/abc.jpg" }])]
         with tempfile.NamedTemporaryFile(suffix=".png") as f:

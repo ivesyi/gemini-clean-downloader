@@ -9,7 +9,7 @@
 - 批量下载：一键下载当前对话全部图片。
 - 下载完成后自动去水印（或手动“立即去水印”）。
 - 可选：去水印后删除原图。
-- 可选：上传去水印后的图片到 CloudFlare ImgBed。
+- 可选：上传去水印后的图片到 CloudFlare ImgBed（MarSeventh/CloudFlare-ImgBed）。
 - 可选：上传后删除本地去水印文件。
 - 面板显示去水印与上传进度（每 1 秒更新）。
 - 结果目录可配置（挂载根目录下的子目录）。
@@ -55,7 +55,7 @@
 - **去水印后删除原图**
 - **下载完成后自动去水印**
 - **启用 ImgBed 上传**
-- **上传 API 地址（CloudFlare ImgBed）**，例如 `https://cfbed.sanyue.de/upload?authCode=xxxx`
+- **上传 API 地址（CloudFlare ImgBed）**，例如 `https://cfbed.sanyue.de/upload?authCode=xxxx`（来自 MarSeventh/CloudFlare-ImgBed）
 - **上传后删除去水印文件**
 - **界面语言**
 - **测试上传**按钮在 ImgBed API 地址旁边，上传内置测试图并显示返回 URL
@@ -92,4 +92,4 @@ ${HOME}/Downloads/
 
 ## 限制说明
 仅去除**可见水印**，不支持移除隐藏水印（如 SynthID）。
-上传目前仅支持 **CloudFlare ImgBed**。
+上传目前仅支持 **CloudFlare ImgBed**（https://github.com/MarSeventh/CloudFlare-ImgBed）。
