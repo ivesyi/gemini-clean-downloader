@@ -129,6 +129,26 @@ button.tertiary {
   padding: 12px 16px;
 }
 
+.path-preview {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: #5f6368;
+}
+
+.path-preview-label {
+  font-weight: 600;
+}
+
+.path-preview code {
+  font-family: 'SF Mono', 'Segoe UI Mono', Menlo, Consolas, monospace;
+  background: #f1f3f4;
+  padding: 6px 8px;
+  border-radius: 8px;
+  display: inline-block;
+  color: #3c4043;
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background: #202124;
@@ -158,6 +178,15 @@ button.tertiary {
 
   .hint {
     background: #303134;
+  }
+
+  .path-preview {
+    color: #9aa0a6;
+  }
+
+  .path-preview code {
+    background: #303134;
+    color: #e8eaed;
   }
 
   button.secondary {

@@ -51,6 +51,7 @@ Available in the extension settings:
 - **Service URL** (default `http://127.0.0.1:17811`)
 - **Input folder** (default `Gemini-Originals`)
 - **Result folder** (default `Gemini-Clean`)
+- **Important:** The Docker mount root must match **Chrome’s default download directory**, because the extension can only download under Chrome’s default download path.
 - **Delete originals after watermark removal**
 - **Auto remove watermark after downloads finish**
 - **Enable ImgBed upload**

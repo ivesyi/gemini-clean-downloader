@@ -13,6 +13,9 @@ const DEFAULTS = {
 const byId = (id) => document.getElementById(id);
 
 let t = (key, vars) => key;
+const DEFAULT_INPUT_SUBDIR = DEFAULTS.inputSubdir;
+const DEFAULT_OUTPUT_SUBDIR = DEFAULTS.outputSubdir;
+const pathUtils = window.GCDPathUtils || {};
 
 const loadSettings = async () => {
   const stored = await chrome.storage.local.get(DEFAULTS);
@@ -27,6 +30,7 @@ const loadSettings = async () => {
   byId('autoClean').checked = settings.autoClean;
   byId('uiLanguage').value = settings.uiLanguage || 'auto';
   updateUploadState();
+  updatePathPreview();
 };
 
 const saveSettings = async () => {
@@ -105,10 +109,33 @@ const updateUploadState = () => {
   byId('deleteCleanedAfterUpload').disabled = !enabled;
 };
 
+const updatePathPreview = () => {
+  const baseLabel = t('label_download_root');
+  if (byId('downloadRoot')) {
+    byId('downloadRoot').textContent = baseLabel;
+  }
+  const inputValue = byId('inputSubdir').value;
+  const outputValue = byId('outputSubdir').value;
+  const buildPreview = pathUtils.buildPreviewPaths;
+  if (!buildPreview) return;
+  const preview = buildPreview(baseLabel, inputValue, outputValue, {
+    input: DEFAULT_INPUT_SUBDIR,
+    output: DEFAULT_OUTPUT_SUBDIR
+  });
+  if (byId('inputPathPreview')) {
+    byId('inputPathPreview').textContent = preview.inputPath;
+  }
+  if (byId('outputPathPreview')) {
+    byId('outputPathPreview').textContent = preview.outputPath;
+  }
+};
+
 byId('saveBtn').addEventListener('click', saveSettings);
 byId('testBtn').addEventListener('click', testConnection);
 byId('uploadEnabled').addEventListener('change', updateUploadState);
 byId('uploadTestBtn').addEventListener('click', testUpload);
+byId('inputSubdir').addEventListener('input', updatePathPreview);
+byId('outputSubdir').addEventListener('input', updatePathPreview);
 
 const init = async () => {
   if (window.GCDI18n?.init) {
@@ -117,6 +144,7 @@ const init = async () => {
     window.GCDI18n.apply(document);
   }
   await loadSettings();
+  updatePathPreview();
 };
 
 init();
